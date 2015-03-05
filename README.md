@@ -5,11 +5,11 @@
 #### **Go-Silkroad**
 -----
 
-Go-silkroad is an API library for work with [Silkroad](opensource.bq.com/). It currently supports:
+Go-silkroad is an API library for work with [Silkroad](http://opensource.bq.com/). It currently supports:
 
   > - Creation of a new Client
 
-Note: the library active development; requires >= Go 1.3
+Note: library in active development; requires >= Go 1.3
 
 
 ----
