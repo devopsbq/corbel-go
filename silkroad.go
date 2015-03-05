@@ -31,6 +31,12 @@ type Client struct {
 
 	// ClientSecret is the application secret hash that match with clientID
 	ClientSecret string
+
+	// UserAgent defines the UserAgent to send in the Headers for every request to the platform
+	UserAgent string
+
+	// IAM endpoint struct
+	IAM *IAMEndpoint
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -49,7 +55,7 @@ func (c *Client) URLFor(endpoint, uri string) (url string) {
 // If a empty environment is provided, it will use production as environment.
 func NewClient(httpClient *http.Client, environment, clientID, clientSecret string) (*Client, error) {
 
-	var client *Client
+	var thisClient *Client
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -67,12 +73,15 @@ func NewClient(httpClient *http.Client, environment, clientID, clientSecret stri
 		return nil, errMissingClientParams
 	}
 
-	client = &Client{
+	thisClient = &Client{
 		client:       httpClient,
 		Environment:  environment,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
+		UserAgent:    userAgent,
 	}
 
-	return client, nil
+	thisClient.IAM = &IAMEndpoint{client: thisClient}
+
+	return thisClient, nil
 }

@@ -1,6 +1,7 @@
 package silkroad
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -31,6 +32,10 @@ func TestNewClient(t *testing.T) {
 	}
 
 	if got, want := client.client, http.DefaultClient; got != want {
+		t.Errorf("NewClient HTTPClient is %v, but want %v", got, want)
+	}
+
+	if got, want := client.UserAgent, fmt.Sprintf("go-silkroad/%s", Version); got != want {
 		t.Errorf("NewClient HTTPClient is %v, but want %v", got, want)
 	}
 }
