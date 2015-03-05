@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/fernandezvara/go-silkroad.svg?branch=master)](https://travis-ci.org/fernandezvara/go-silkroad)
 [![GoDoc](https://godoc.org/github.com/fernandezvara/go-silkroad?status.png)](https://godoc.org/github.com/fernandezvara/go-silkroad)
-
+[![Coverage Status](https://coveralls.io/repos/fernandezvara/go-silkroad/badge.svg)](https://coveralls.io/r/fernandezvara/go-silkroad)
 
 #### **Go-Silkroad**
 -----
