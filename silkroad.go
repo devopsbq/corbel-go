@@ -5,6 +5,19 @@ import (
 	"net/http"
 )
 
+var (
+	userAgent           string
+	allowedEnvironments []string
+	allowedEndpoints    []string
+)
+
+// init defines constants that will be used later
+func init() {
+	userAgent = fmt.Sprintf("go-silkroad/%s", Version)
+	allowedEnvironments = []string{"production", "staging", "current", "next", "qa", "integration"}
+	allowedEndpoints = []string{"iam", "oauth", "assets", "resources"}
+}
+
 // Client is the struct that manages communication with the Silkroad APIs.
 type Client struct {
 	// client is the HTTP client to communicate with the API.
@@ -12,6 +25,12 @@ type Client struct {
 
 	// Environment is used to define the target environment to speak with.
 	Environment string
+
+	// ClientID is the application defined client on Silkroad
+	ClientID string
+
+	// ClientSecret is the application secret hash that match with clientID
+	ClientSecret string
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -28,7 +47,10 @@ func (c *Client) URLFor(endpoint, uri string) (url string) {
 // NewClient returns a new Silkroad API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 // If a empty environment is provided, it will use production as environment.
-func NewClient(httpClient *http.Client, environment string) (client *Client) {
+func NewClient(httpClient *http.Client, environment, clientID, clientSecret string) (*Client, error) {
+
+	var client *Client
+
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
@@ -37,10 +59,20 @@ func NewClient(httpClient *http.Client, environment string) (client *Client) {
 		environment = "production"
 	}
 
-	client = &Client{
-		client:      httpClient,
-		Environment: environment,
+	if StringInSlice(allowedEnvironments, environment) == false {
+		return nil, errInvalidEnvironment
 	}
 
-	return
+	if clientID == "" || clientSecret == "" {
+		return nil, errMissingClientParams
+	}
+
+	client = &Client{
+		client:       httpClient,
+		Environment:  environment,
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+	}
+
+	return client, nil
 }
