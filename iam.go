@@ -4,6 +4,6 @@ package silkroad
 // It takes care of all Identity and Authorization Management
 //
 // Full API info: http://docs.silkroadiam.apiary.io/
-type IAMEndpoint struct {
+type IAMService struct {
 	client *Client
 }
