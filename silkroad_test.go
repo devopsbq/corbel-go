@@ -15,8 +15,6 @@ func TestNewClient(t *testing.T) {
 		err    error
 	)
 
-	//NewClient(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint16) (*Client, error) {
-
 	client, err = NewClient(nil, "", "", "", "", "", "", "", 3000)
 	if err == nil {
 		t.Error("NewClient must fail if JWT clientJWTSigningMethod is not an allowed method.")
@@ -136,7 +134,7 @@ func TestClientNewRequest(t *testing.T) {
 	}
 }
 
-func TestClientGetToken(t *testing.T) {
+func TestClientIAMOauthToken(t *testing.T) {
 	var (
 		client *Client
 		err    error
@@ -161,4 +159,29 @@ func TestClientGetToken(t *testing.T) {
 	if got, want := strings.Count(token, "."), 2; got != want {
 		t.Errorf("GetToken must return a token with 2 dots. Got: %v  Want: %v", got, want)
 	}
+}
+
+func TestClientIAMOauthTokenUpgrade(t *testing.T) {
+	var (
+		client *Client
+		err    error
+	)
+
+	client, err = NewClient(
+		nil,
+		"qa",
+		"a9fb0e79",
+		"test-client",
+		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
+		"",
+		"silkroad-qa",
+		"HS256",
+		10)
+
+	err = client.IAM.OauthTokenUpgrade("aaaaaa")
+	if err != errClientNotAuthorized {
+		t.Errorf("OauthTokenUpgrade must fail since it got an invalid token. %s", err)
+	}
+
+	// TODO: correct tests with Assets workflow
 }
