@@ -2,7 +2,7 @@ package silkroad
 
 import "testing"
 
-func TestStringInSlice(t *testing.T) {
+func TestToolboxStringInSlice(t *testing.T) {
 	slice := []string{"a", "b", "c"}
 
 	if got, want := stringInSlice(slice, "a"), true; got != want {

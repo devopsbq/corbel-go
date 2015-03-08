@@ -3,6 +3,7 @@ package silkroad
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -62,8 +63,18 @@ type Client struct {
 	// UserAgent defines the UserAgent to send in the Headers for every request to the platform.
 	UserAgent string
 
+	// Token is the actual token to send as Authentication Bearer
+	CurrentToken string
+
+	// CurrentTokenExpirationTime is the unix time where the token will expire
+	CurrentTokenExpirationTime int64
+
+	// CurrentRefreshToken is the current refresh token received from the IAM service
+	CurrentRefreshToken string
+
 	// IAM endpoint struct
-	IAM *IAMService
+	IAM       *IAMService
+	Resources *ResourcesService
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -101,65 +112,30 @@ func (c *Client) NewRequest(method, endpoint, urlStr, mediaType string, body int
 
 	req.Header.Add("Content-Type", mediaType)
 	req.Header.Add("Accept", mediaType)
-	req.Header.Add("User-Agent", userAgent)
-	// req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", authBearer))
+	req.Header.Add("User-Agent", c.UserAgent)
+	if c.CurrentToken != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
+	}
 	return req, nil
 }
 
-type iamOauthTokenResponse struct {
-	AccessToken  string `json:"accessToken,omitempty"`
-	ExpiresAt    int    `json:"expiresAt,omitempty"`
-	RefreshToken string `json:"refreshToken,omitempty"`
+// Token returns the token to use as bearer. If the token has already expired
+// it refresh it.
+func (c *Client) Token() string {
+	if c.CurrentTokenExpirationTime < time.Now().Unix() {
+		return c.CurrentToken
+	}
+	return ""
 }
 
-// // GetToken returns
-// func (c *Client) GetToken() (string, error) {
-// 	signingMethod := jwt.GetSigningMethod(c.ClientJWTSigningMethod)
-// 	token := jwt.New(signingMethod)
-// 	// Set some claims
-// 	token.Claims["aud"] = "http://iam.bqws.io"
-// 	token.Claims["exp"] = time.Now().Add(time.Second * c.TokenExpirationTime).Unix()
-// 	token.Claims["iss"] = c.ClientID
-// 	token.Claims["scope"] = c.ClientScopes
-// 	token.Claims["domain"] = c.ClientDomain
-// 	token.Claims["name"] = c.ClientName
-//
-// 	// Sign and get the complete encoded token as a string
-// 	tokenString, err := token.SignedString([]byte(c.ClientSecret))
-// 	if err != nil {
-// 		return "", errJWTEncodingError
-// 	}
-//
-// 	values := url.Values{}
-// 	values.Set("grant_type", grantType)
-// 	values.Set("assertion", tokenString)
-//
-// 	req, err := http.NewRequest("POST", fmt.Sprintf("%s", c.URLFor("iam", "/v1.0/oauth/token")), bytes.NewBufferString(values.Encode()))
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	req.Header.Add("User-Agent", userAgent)
-// 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-//
-// 	res, err := c.httpClient.Do(req)
-// 	if err != nil {
-// 		return "", errClientNotAuthorized
-// 	}
-//
-// 	defer res.Body.Close()
-// 	contents, err := ioutil.ReadAll(res.Body)
-// 	if err != nil {
-// 		return "", errResponseError
-// 	}
-//
-// 	var iamResponse iamOauthTokenResponse
-// 	err = json.Unmarshal(contents, &iamResponse)
-// 	if err != nil {
-// 		return "", errJSONUnmarshalError
-// 	}
-//
-// 	return iamResponse.AccessToken, nil
-// }
+// ReturnErrorByHTTPStatusCode returns the http error code or nil if it returns the
+//   desired error
+func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
+	if res.StatusCode == desiredStatusCode {
+		return nil
+	}
+	return errors.New(http.StatusText(res.StatusCode))
+}
 
 // NewClient returns a new Silkroad API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
@@ -210,6 +186,7 @@ func NewClient(httpClient *http.Client, environment, clientID, clientName, clien
 	}
 
 	thisClient.IAM = &IAMService{client: thisClient}
+	thisClient.Resources = &ResourcesService{client: thisClient}
 
 	return thisClient, nil
 }

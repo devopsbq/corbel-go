@@ -12,6 +12,12 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+type iamOauthTokenResponse struct {
+	AccessToken  string `json:"accessToken,omitempty"`
+	ExpiresAt    int64  `json:"expiresAt,omitempty"`
+	RefreshToken string `json:"refreshToken,omitempty"`
+}
+
 // OauthToken gets an access token
 //
 // API Docs: http://docs.silkroadiam.apiary.io/#reference/authorization/oauthtoken
@@ -32,6 +38,7 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) (string, err
 	token.Claims["scope"] = i.client.ClientScopes
 	token.Claims["domain"] = i.client.ClientDomain
 	token.Claims["name"] = i.client.ClientName
+	// looking for basic auth pair
 	if username != "" {
 		token.Claims["basic_auth.username"] = username
 	}
@@ -57,7 +64,7 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) (string, err
 
 	res, err := i.client.httpClient.Do(req)
 	if err != nil {
-		return "", errClientNotAuthorized
+		return "", errHTTPNotAuthorized
 	}
 
 	defer res.Body.Close()
@@ -71,6 +78,10 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) (string, err
 	if err != nil {
 		return "", errJSONUnmarshalError
 	}
+
+	i.client.CurrentToken = iamResponse.AccessToken
+	i.client.CurrentTokenExpirationTime = iamResponse.ExpiresAt
+	i.client.CurrentRefreshToken = iamResponse.RefreshToken
 
 	return iamResponse.AccessToken, nil
 }
@@ -98,7 +109,7 @@ func (i *IAMService) OauthTokenUpgrade(assetsToken string) error {
 
 	res, err = i.client.httpClient.Do(req)
 	if res.StatusCode == 401 {
-		return errClientNotAuthorized
+		return errHTTPNotAuthorized
 	}
 	if err != nil {
 		return err

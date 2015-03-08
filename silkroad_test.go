@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 )
 
-func TestNewClient(t *testing.T) {
+func TestClientNewClient(t *testing.T) {
 	var (
 		client *Client
 		err    error
@@ -56,6 +55,10 @@ func TestNewClient(t *testing.T) {
 	if got, want := client.UserAgent, fmt.Sprintf("go-silkroad/%s", Version); got != want {
 		t.Errorf("NewClient HTTPClient is %v, but want %v", got, want)
 	}
+
+	if got, want := client.CurrentToken, ""; got != want {
+		t.Errorf("NewClient Token is %v, but want %v", got, want)
+	}
 }
 
 func TestClientURLFor(t *testing.T) {
@@ -78,7 +81,6 @@ func TestClientURLFor(t *testing.T) {
 func TestClientNewRequest(t *testing.T) {
 	// IAMVersion is a helper struct for the test
 	type structIAMVersion struct {
-		BuildUser       string `json:"build.user,omitempty"`
 		BuildGroupID    string `json:"build.groupId,omitempty"`
 		BuildArtifactID string `json:"build.artifactId,omitempty"`
 	}
@@ -129,59 +131,4 @@ func TestClientNewRequest(t *testing.T) {
 	if got, want := iamVersion.BuildGroupID, "com.bqreaders.silkroad"; got != want {
 		t.Errorf("/version unmarshaled json build.groupId is %v, but want %v", got, want)
 	}
-	if got, want := iamVersion.BuildUser, "jenkins"; got != want {
-		t.Errorf("/version unmarshaled json build.user is %v, but want %v", got, want)
-	}
-}
-
-func TestClientIAMOauthToken(t *testing.T) {
-	var (
-		client *Client
-		err    error
-	)
-
-	client, err = NewClient(
-		nil,
-		"qa",
-		"a9fb0e79",
-		"test-client",
-		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
-		"",
-		"silkroad-qa",
-		"HS256",
-		10)
-
-	token, err := client.IAM.OauthToken()
-	if got := err; got != nil {
-		t.Errorf("GetToken must not fail. Got: %v  Want: nil", got)
-	}
-
-	if got, want := strings.Count(token, "."), 2; got != want {
-		t.Errorf("GetToken must return a token with 2 dots. Got: %v  Want: %v", got, want)
-	}
-}
-
-func TestClientIAMOauthTokenUpgrade(t *testing.T) {
-	var (
-		client *Client
-		err    error
-	)
-
-	client, err = NewClient(
-		nil,
-		"qa",
-		"a9fb0e79",
-		"test-client",
-		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
-		"",
-		"silkroad-qa",
-		"HS256",
-		10)
-
-	err = client.IAM.OauthTokenUpgrade("aaaaaa")
-	if err != errClientNotAuthorized {
-		t.Errorf("OauthTokenUpgrade must fail since it got an invalid token. %s", err)
-	}
-
-	// TODO: correct tests with Assets workflow
 }
