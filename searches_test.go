@@ -67,3 +67,30 @@ func TestSearchesQueryStrings(t *testing.T) {
 		t.Errorf("Error in search Query String: Got: %v, Want: %v", got, want)
 	}
 }
+
+func TestSortsQueryStrings(t *testing.T) {
+	sort := NewSort()
+	sort.Asc = []string{"firstName", "lastName"}
+
+	queryString, err := sort.QueryString()
+
+	if err != nil {
+		t.Errorf("Unexpected error marshalling search query string. Got: %v", err)
+	}
+
+	if got, want := queryString, `{"firstName":"asc","lastName":"asc"}`; got != want {
+		t.Errorf("Error in search Query String: Got: %v, Want: %v", got, want)
+	}
+
+	sort.Desc = []string{"other", "andAnother"}
+
+	queryString, err = sort.QueryString()
+
+	if err != nil {
+		t.Errorf("Unexpected error marshalling search query string. Got: %v", err)
+	}
+
+	if got, want := queryString, `{"andAnother":"desc","firstName":"asc","lastName":"asc","other":"desc"}`; got != want {
+		t.Errorf("Error in search Query String: Got: %v, Want: %v", got, want)
+	}
+}
