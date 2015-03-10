@@ -54,9 +54,9 @@ func TestIAMOauthTokenUpgrade(t *testing.T) {
 		t.Errorf("OauthTokenUpgrade must fail since it got an invalid token. %s", err)
 	}
 
-	// TODO: correct this test with a valid token from assets
-	if got := client.IAM.OauthTokenUpgrade("change to the assets token before it works"); got != nil {
-		t.Errorf("OauthTokenUpgrade failed. Got: %v Want: nil", got)
-	}
+	// // TODO: correct this test with a valid token from assets
+	// if got := client.IAM.OauthTokenUpgrade("change to the assets token before it works"); got != nil {
+	// 	t.Errorf("OauthTokenUpgrade failed. Got: %v Want: nil", got)
+	// }
 
 }
