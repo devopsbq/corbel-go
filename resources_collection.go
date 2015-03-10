@@ -29,6 +29,11 @@ func (r *ResourcesService) AddToCollection(collectionName string, resource inter
 	return ReturnErrorByHTTPStatusCode(res, 201)
 }
 
+// SearchCollection gets the desired objects in base of a search query
+func (r *ResourcesService) SearchCollection(collectionName string) error {
+	return nil
+}
+
 // GetFromCollection gets the desired object from the collection by id
 func (r *ResourcesService) GetFromCollection(collectionName, id string, resource interface{}) error {
 
