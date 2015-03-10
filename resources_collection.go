@@ -3,26 +3,21 @@ package silkroad
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
 // AddToCollection add the required struct formated as json to the desired collection
 // resource must have exported variables and optionally its representation as JSON.
+//func (r *ResourcesService) AddToCollection(collectionName string, jsonEncodedStruct []byte) error {
 func (r *ResourcesService) AddToCollection(collectionName string, resource interface{}) error {
-
 	var (
-		resourceByte []byte
-		req          *http.Request
-		res          *http.Response
-		err          error
+		req *http.Request
+		res *http.Response
+		err error
 	)
 
-	resourceByte, err = json.Marshal(resource)
-	if err != nil {
-		return err
-	}
-
-	req, err = r.client.NewRequest("POST", "resources", fmt.Sprintf("/v1.0/resource/%s", collectionName), "application/json", resourceByte)
+	req, err = r.client.NewRequest("POST", "resources", fmt.Sprintf("/v1.0/resource/%s", collectionName), "application/json", resource)
 	if err != nil {
 		return err
 	}
@@ -32,4 +27,60 @@ func (r *ResourcesService) AddToCollection(collectionName string, resource inter
 		return err
 	}
 	return ReturnErrorByHTTPStatusCode(res, 201)
+}
+
+// GetFromCollection gets the desired object from the collection by id
+func (r *ResourcesService) GetFromCollection(collectionName, id string, resource interface{}) error {
+
+	var (
+		req          *http.Request
+		res          *http.Response
+		resourceByte []byte
+		err          error
+	)
+
+	req, err = r.client.NewRequest("GET", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), "application/json", nil)
+	if err != nil {
+		return err
+	}
+
+	res, err = r.client.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+	resourceByte, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		return errResponseError
+	}
+
+	err = json.Unmarshal(resourceByte, &resource)
+	if err != nil {
+		return errJSONUnmarshalError
+	}
+
+	return ReturnErrorByHTTPStatusCode(res, 200)
+}
+
+// DeleteFromCollection deletes the desired resource from the platform by id
+func (r *ResourcesService) DeleteFromCollection(collectionName, id string) error {
+
+	var (
+		req *http.Request
+		res *http.Response
+		err error
+	)
+
+	req, err = r.client.NewRequest("DELETE", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), "application/json", nil)
+	if err != nil {
+		return err
+	}
+
+	res, err = r.client.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	return ReturnErrorByHTTPStatusCode(res, 204)
 }

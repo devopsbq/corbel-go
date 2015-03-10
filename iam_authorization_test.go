@@ -22,13 +22,13 @@ func TestIAMOauthToken(t *testing.T) {
 		"HS256",
 		10)
 
-	token, err := client.IAM.OauthToken()
+	err = client.IAM.OauthToken()
 	if got := err; got != nil {
 		t.Errorf("GetToken must not fail. Got: %v  Want: nil", got)
 	}
 
-	if got, want := strings.Count(token, "."), 2; got != want {
-		t.Errorf("GetToken must return a token with 2 dots. Got: %v  Want: %v", got, want)
+	if got, want := strings.Count(client.CurrentToken, "."), 2; got != want {
+		t.Errorf("client.CurrentToken must return a token with 2 dots. Got: %v  Want: %v", got, want)
 	}
 }
 

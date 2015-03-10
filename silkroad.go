@@ -134,6 +134,9 @@ func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) erro
 	if res.StatusCode == desiredStatusCode {
 		return nil
 	}
+	if http.StatusText(res.StatusCode) == "" {
+		return fmt.Errorf("HTTP Error %d", res.StatusCode)
+	}
 	return errors.New(http.StatusText(res.StatusCode))
 }
 
