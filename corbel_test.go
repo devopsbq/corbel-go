@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 import (
 	"encoding/json"
@@ -52,7 +52,7 @@ func TestClientNewClient(t *testing.T) {
 		t.Errorf("NewClient HTTPClient is %v, but want %v", got, want)
 	}
 
-	if got, want := client.UserAgent, fmt.Sprintf("go-silkroad/%s", Version); got != want {
+	if got, want := client.UserAgent, fmt.Sprintf("corbel-go/%s", Version); got != want {
 		t.Errorf("NewClient HTTPClient is %v, but want %v", got, want)
 	}
 

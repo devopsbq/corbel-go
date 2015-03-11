@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 // stringInSlice looks if a string is in a string array
 func stringInSlice(array []string, item string) bool {

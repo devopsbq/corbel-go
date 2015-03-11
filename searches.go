@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 import (
 	"encoding/json"

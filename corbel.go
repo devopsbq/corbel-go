@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ var (
 
 // init defines constants that will be used later
 func init() {
-	userAgent = fmt.Sprintf("go-silkroad/%s", Version)
+	userAgent = fmt.Sprintf("corbel-go/%s", Version)
 	allowedEnvironments = []string{"production", "staging", "current", "next", "qa", "integration"}
 	allowedEndpoints = []string{"iam", "oauth", "assets", "resources"}
 	allowedJTWSigningMethods = []string{"HS256", "RSA"}

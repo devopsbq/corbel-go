@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 // ResourcesService handles the interface for retrival resource's representation
 // on Silkroad.

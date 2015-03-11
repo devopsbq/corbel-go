@@ -1,4 +1,4 @@
-package silkroad
+package corbel
 
 // IAMService handles communication with the IAM service of Silkroad.
 // It takes care of all Identity and Authorization Management
