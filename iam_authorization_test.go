@@ -60,3 +60,41 @@ func TestIAMOauthTokenUpgrade(t *testing.T) {
 	// }
 
 }
+
+func TestIAMOauthTokenBasicAuth(t *testing.T) {
+	var (
+		client *Client
+		err    error
+	)
+
+	client, err = NewClient(
+		nil,
+		"qa",
+		"a9fb0e79",
+		"test-client",
+		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
+		"",
+		"silkroad-qa",
+		"HS256",
+		10)
+
+	err = client.IAM.OauthTokenBasicAuth("username", "password")
+	if err != nil {
+		t.Errorf("OauthTokenBasicAuth must not fail if client is correct. %s", err)
+	}
+
+	if got, want := client.CurrentToken, ""; got != want {
+		t.Errorf("OauthTokenBasicAuth must not fill CurrentToken if user/password does not exists.")
+	}
+
+	// TODO! Fix this test with a user creation and deletion
+	err = client.IAM.OauthTokenBasicAuth("foouser", "foopass")
+	if err != nil {
+		t.Errorf("OauthTokenBasicAuth must not fail if client is correct. %s", err)
+	}
+
+	if got, want := client.CurrentToken, ""; got != want {
+		t.Errorf("OauthTokenBasicAuth must fill CurrentToken if user/password does not exists.")
+	}
+
+}

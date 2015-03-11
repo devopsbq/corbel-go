@@ -30,8 +30,8 @@ func (r *ResourcesService) AddToCollection(collectionName string, resource inter
 }
 
 // SearchCollection gets the desired objects in base of a search query
-func (r *ResourcesService) SearchCollection(collectionName string) error {
-	return nil
+func (r *ResourcesService) SearchCollection(collectionName string) *Search {
+	return NewSearch(r.client, "resources", fmt.Sprintf("/v1.0/resource/%s", collectionName))
 }
 
 // GetFromCollection gets the desired object from the collection by id

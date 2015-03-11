@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 var (
@@ -78,14 +81,11 @@ type Client struct {
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
-func (c *Client) URLFor(endpoint, uri string) (url string) {
-	switch c.Environment {
-	case "production":
-		url = fmt.Sprintf("https://%s.bqws.io%s", endpoint, uri)
-	default:
-		url = fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
+func (c *Client) URLFor(endpoint, uri string) string {
+	if c.Environment == "production" {
+		return fmt.Sprintf("https://%s.bqws.io%s", endpoint, uri)
 	}
-	return
+	return fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
 }
 
 // NewRequest creates an API request.
@@ -129,7 +129,7 @@ func (c *Client) Token() string {
 }
 
 // ReturnErrorByHTTPStatusCode returns the http error code or nil if it returns the
-//   desired error
+// desired error
 func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
 	if res.StatusCode == desiredStatusCode {
 		return nil
@@ -192,4 +192,25 @@ func NewClient(httpClient *http.Client, environment, clientID, clientName, clien
 	thisClient.Resources = &ResourcesService{client: thisClient}
 
 	return thisClient, nil
+}
+
+func addOptions(s string, opt interface{}) (string, error) {
+	v := reflect.ValueOf(opt)
+
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return s, err
+	}
+
+	qv, err := query.Values(opt)
+	if err != nil {
+		return s, err
+	}
+
+	u.RawQuery = qv.Encode()
+	return u.String(), nil
 }
