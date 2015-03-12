@@ -143,6 +143,14 @@ err = client.Resources.GetFromCollection("test:GoTestResource",
                                          "1234567890abcdef", &test2)
 ```
 
+#### **Updating resource**
+
+```Go
+test2.Key1 = "new string"
+err = client.Resources.UpdateInCollection("test:GoTestResource",
+                                         "1234567890abcdef", &test2)
+```
+
 #### **Delete resource**
 
 ```Go
