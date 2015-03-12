@@ -104,7 +104,7 @@ func TestClientNewRequest(t *testing.T) {
 		"HS256",
 		3000)
 
-	req, err = client.NewRequest("GET", "iam", "/version", "application/json", nil)
+	req, err = client.NewRequest("GET", "iam", "/version", nil)
 	if err != nil {
 		t.Errorf("Request failed: %s", err.Error())
 	}

@@ -5,7 +5,7 @@
 # **Corbel-Go**
 -----
 
-Corbel-Go is an API library for work with [Corbel](http://opensource.bq.com/). It currently supports:
+corbel-go is an API library for work with [corbel](http://opensource.bq.com/). It currently supports:
 
   > - Creation of a new Client
   > - Token workflow
@@ -20,7 +20,8 @@ Note: library in active development; requires >= Go 1.3
 ### **Creating a client**
 
 ```Go
-// NewClient(http.Client, clientId, clientName, clientSecret, clientScopes, clientDomain, JWTSigningMethod, tokenExpirationTime)
+// NewClient(http.Client, clientId, clientName, clientSecret, clientScopes,
+//           clientDomain, JWTSigningMethod, tokenExpirationTime)
 client, _ = NewClient(nil, "someID", "", "someSecret", "", "", "HS256", 3000)
 ```
 
@@ -47,13 +48,16 @@ err = client.IAM.OauthTokenBasicAuth("username", "password")
 
 Adds a resource of a defined type. Definitions are JSON parseable structs.
 
+*Important Note:* Avoid using omitempty in the JSON definition if you think you could have a value that could turn _false, 0, empty strings or nil_. In those cases _json.Marshal_ won't export the data. So value won't be updated in the backend.
+*Important Note 2:* Is recommended to define the ID on the structs to be able to update them correctly without workarounds.
+
 ```Go
 type ResourceForTest struct {
   ID   string  `json:"id,omitempty"`
-  Key1 string  `json:"key1,omitempty"`
-  Key2 int     `json:"key2,omitempty"`
-  Key3 float64 `json:"key3,omitempty"`
-  Key4 bool    `json:"key4,omitempty"`
+  Key1 string  `json:"key1"`
+  Key2 int     `json:"key2"`
+  Key3 float64 `json:"key3"`
+  Key4 bool    `json:"key4"`
 }
 
 test1 := ResourceForTest{
@@ -69,7 +73,7 @@ err = client.Resources.AddToCollection("test:GoTestResource", &test1)
 #### **Search for Resources**
 
 Search allow to browse for the required resources using a simple interface.
-All Search conditions are shared in all modules of Corbel, so it's the same for users, for example.
+All Search conditions are shared in all modules of _corbel_, so it's the same for users, for example.
 
 **Per Page**
 
@@ -112,7 +116,6 @@ err = search.Page(0, &arrResourceForTest)
 	In   map[string][]string   // One of this array
 	All  map[string][]string   // All of this array
 	Like map[string]string     // Like
-}
 ```
 
 **Sort conditions**
@@ -136,13 +139,15 @@ func (s *Search) Sum(field string) (float64, error)
 ```Go
 test2 := ResourceForTest{}
 
-err = client.Resources.GetFromCollection("test:GoTestResource", "1234567890abcdef", &test2)
+err = client.Resources.GetFromCollection("test:GoTestResource",
+                                         "1234567890abcdef", &test2)
 ```
 
 #### **Delete resource**
 
 ```Go
-err = client.Resources.DeleteFromCollection("test:GoTestResource", "1234567890abcdef")
+err = client.Resources.DeleteFromCollection("test:GoTestResource",
+                                            "1234567890abcdef")
 ```
 
 

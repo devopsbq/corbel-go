@@ -89,10 +89,10 @@ func TestResourcesGetFromCollection(t *testing.T) {
 
 	type ResourceForTest struct {
 		ID   string  `json:"id,omitempty"`
-		Key1 string  `json:"key1,omitempty"`
-		Key2 int     `json:"key2,omitempty"`
-		Key3 float64 `json:"key3,omitempty"`
-		Key4 bool    `json:"key4,omitempty"`
+		Key1 string  `json:"key1"`
+		Key2 int     `json:"key2"`
+		Key3 float64 `json:"key3"`
+		Key4 bool    `json:"key4"`
 	}
 
 	var arrResourceForTest []ResourceForTest
@@ -137,23 +137,51 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	if got := err; got != nil {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: nil", got)
 	}
-
 	if got, want := test2.Key1, test1.Key1; got != want {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: %v", got, want)
 	}
-
 	if got, want := test2.Key2, test1.Key2; got != want {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: %v", got, want)
 	}
-
 	if got, want := test2.Key3, test1.Key3; got != want {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: %v", got, want)
 	}
-
 	if got, want := test2.Key4, test1.Key4; got != want {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: %v", got, want)
 	}
 
-	err = client.Resources.DeleteFromCollection("test:GoTestResource", arrResourceForTest[0].ID)
+	test2.Key1 = "new string"
+	test2.Key2 = 654321
+	test2.Key3 = 654.321
+	test2.Key4 = false
+
+	err = client.Resources.UpdateInCollection("test:GoTestResource", test2.ID, &test2)
+	if err != nil {
+		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: nil", err)
+	}
+
+	test3 := ResourceForTest{}
+	err = client.Resources.GetFromCollection("test:GoTestResource", test2.ID, &test3)
+
+	if got, want := test3.ID, test2.ID; got != want {
+		t.Errorf("Failed to GetFromCollection after UpdateInCollection to a struct. Got: %v  Want: %v", got, want)
+	}
+	if got, want := test3.Key1, test2.Key1; got != want {
+		t.Errorf("Failed to GetFromCollection after UpdateInCollection to a struct. Got: %v  Want: %v", got, want)
+	}
+	if got, want := test3.Key2, test2.Key2; got != want {
+		t.Errorf("Failed to GetFromCollection after UpdateInCollection to a struct. Got: %v  Want: %v", got, want)
+	}
+	if got, want := test3.Key3, test2.Key3; got != want {
+		t.Errorf("Failed to GetFromCollection after UpdateInCollection to a struct. Got: %v  Want: %v", got, want)
+	}
+	if got, want := test3.Key4, test2.Key4; got != want {
+		t.Errorf("Failed to GetFromCollection after UpdateInCollection to a struct. Got: %v  Want: %v", got, want)
+	}
+
+	err = client.Resources.DeleteFromCollection("test:GoTestResource", test3.ID)
+	if err != nil {
+		t.Errorf("Failed to DeleteFromCollection to a struct. Got: %v  Want: nil", err)
+	}
 
 }

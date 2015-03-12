@@ -103,7 +103,7 @@ func TestSearchQueryString(t *testing.T) {
 	search := NewSearch(client, "resources", "/v1.0/resource/test:Collection")
 
 	if got, want := search.PageSize, 10; got != want {
-		t.Errorf("Error default PerPage. Got: %v, Want: %v", got, want)
+		t.Errorf("Error default PageSize. Got: %v, Want: %v", got, want)
 	}
 
 	searchQueryString := search.Query.string()

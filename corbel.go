@@ -93,8 +93,7 @@ func (c *Client) URLFor(endpoint, uri string) string {
 // endpoint is the endpoint of SR to speak with
 // url is the url to query. it must be preceded by a slash.
 // body is, if specified, the value JSON encoded to be used as request body.
-// mediaType is the desired media type to set in the request.
-func (c *Client) NewRequest(method, endpoint, urlStr, mediaType string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (*http.Request, error) {
 	u, _ := url.Parse(c.URLFor(endpoint, urlStr))
 
 	buf := new(bytes.Buffer)
@@ -110,8 +109,8 @@ func (c *Client) NewRequest(method, endpoint, urlStr, mediaType string, body int
 		return nil, err
 	}
 
-	req.Header.Add("Content-Type", mediaType)
-	req.Header.Add("Accept", mediaType)
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
 	req.Header.Add("User-Agent", c.UserAgent)
 	if c.CurrentToken != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))

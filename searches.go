@@ -46,7 +46,7 @@ func (s *Search) Page(pageNumber int, result interface{}) error {
 		APIPage:     pageNumber,
 		APIPageSize: s.PageSize,
 	}
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), "application/json", nil)
+	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func (s *Search) Count(field string) (int, error) {
 		APIAggregation: fmt.Sprintf("{\"$count\":\"%s\"}", field),
 	}
 
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), "application/json", nil)
+	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	if err != nil {
 		return 0, err
 	}
@@ -130,7 +130,7 @@ func (s *Search) Average(field string) (float64, error) {
 		APISort:        s.Sort.string(),
 		APIAggregation: fmt.Sprintf("{\"$avg\":\"%s\"}", field),
 	}
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), "application/json", nil)
+	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	if err != nil {
 		return 0, err
 	}
@@ -176,7 +176,7 @@ func (s *Search) Sum(field string) (float64, error) {
 		APIAggregation: fmt.Sprintf("{\"$sum\":\"%s\"}", field),
 	}
 
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), "application/json", nil)
+	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	if err != nil {
 		return 0, err
 	}
