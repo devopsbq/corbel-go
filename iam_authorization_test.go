@@ -11,7 +11,7 @@ func TestIAMOauthToken(t *testing.T) {
 		err    error
 	)
 
-	client, err = NewClient(
+	client, err = NewClientForEnvironment(
 		nil,
 		"qa",
 		"a9fb0e79",
@@ -38,7 +38,7 @@ func TestIAMOauthTokenUpgrade(t *testing.T) {
 		err    error
 	)
 
-	client, err = NewClient(
+	client, err = NewClientForEnvironment(
 		nil,
 		"qa",
 		"a9fb0e79",
@@ -67,7 +67,7 @@ func TestIAMOauthTokenBasicAuth(t *testing.T) {
 		err    error
 	)
 
-	client, err = NewClient(
+	client, err = NewClientForEnvironment(
 		nil,
 		"qa",
 		"a9fb0e79",

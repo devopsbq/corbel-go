@@ -14,7 +14,7 @@ func TestResourcesAddToCollection(t *testing.T) {
 		jsonEncodedStruct []byte
 	)
 
-	client, err = NewClient(
+	client, err = NewClientForEnvironment(
 		nil,
 		"qa",
 		"a9fb0e79",
@@ -71,7 +71,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		search *Search
 	)
 
-	client, err = NewClient(
+	client, err = NewClientForEnvironment(
 		nil,
 		"qa",
 		"a9fb0e79",

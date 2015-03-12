@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/fernandezvara/corbel-go.svg?branch=master)](https://travis-ci.org/fernandezvara/corbel-go)
 [![GoDoc](https://godoc.org/github.com/fernandezvara/go-silkroad?status.png)](https://godoc.org/github.com/fernandezvara/corbel-go)
-[![Coverage Status](https://coveralls.io/repos/fernandezvara/corbel-go/badge.svg)](https://coveralls.io/r/fernandezvara/corbel-go)
+[![Coverage Status](https://coveralls.io/repos/fernandezvara/corbel-go/badge.svg?branch=master)](https://coveralls.io/r/fernandezvara/corbel-go?branch=master)
 
 #### **Corbel-Go**
 -----
 
-Go-silkroad is an API library for work with [Corbel](http://opensource.bq.com/). It currently supports:
+Corbel-Go is an API library for work with [Corbel](http://opensource.bq.com/). It currently supports:
 
   > - Creation of a new Client
   > - Token workflow

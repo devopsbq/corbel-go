@@ -121,6 +121,7 @@ func (c *Client) NewRequest(method, endpoint, urlStr, mediaType string, body int
 
 // Token returns the token to use as bearer. If the token has already expired
 // it refresh it.
+// TODO: Refresh token
 func (c *Client) Token() string {
 	if c.CurrentTokenExpirationTime < time.Now().Unix() {
 		return c.CurrentToken
@@ -128,22 +129,16 @@ func (c *Client) Token() string {
 	return ""
 }
 
-// ReturnErrorByHTTPStatusCode returns the http error code or nil if it returns the
-// desired error
-func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
-	if res.StatusCode == desiredStatusCode {
-		return nil
-	}
-	if http.StatusText(res.StatusCode) == "" {
-		return fmt.Errorf("HTTP Error %d", res.StatusCode)
-	}
-	return errors.New(http.StatusText(res.StatusCode))
+// NewClient returns a new Corbel API client.
+// If a nil httpClient is provided, it will return a http.DefaultClient.
+func NewClient(httpClient *http.Client, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime time.Duration) (*Client, error) {
+	return NewClientForEnvironment(httpClient, "production", clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod, tokenExpirationTime)
 }
 
-// NewClient returns a new Silkroad API client.
+// NewClientForEnvironment returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 // If a empty environment is provided, it will use production as environment.
-func NewClient(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime time.Duration) (*Client, error) {
+func NewClientForEnvironment(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime time.Duration) (*Client, error) {
 
 	var thisClient *Client
 
@@ -213,4 +208,16 @@ func addOptions(s string, opt interface{}) (string, error) {
 
 	u.RawQuery = qv.Encode()
 	return u.String(), nil
+}
+
+// ReturnErrorByHTTPStatusCode returns the http error code or nil if it returns the
+// desired error
+func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
+	if res.StatusCode == desiredStatusCode {
+		return nil
+	}
+	if http.StatusText(res.StatusCode) == "" {
+		return fmt.Errorf("HTTP Error %d", res.StatusCode)
+	}
+	return errors.New(http.StatusText(res.StatusCode))
 }
