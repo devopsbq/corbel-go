@@ -1,9 +1,7 @@
 package corbel
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -28,94 +26,45 @@ type IAMUser struct {
 func (i *IAMService) Add(user *IAMUser) error {
 	var (
 		req *http.Request
-		res *http.Response
 		err error
 	)
 
 	req, err = i.client.NewRequest("POST", "iam", "/v1.0/user/", user)
-	if err != nil {
-		return err
-	}
-
-	res, err = i.client.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-	return ReturnErrorByHTTPStatusCode(res, 201)
+	return returnErrorHTTPSimple(i.client, req, err, 201)
 }
 
 // Update updates an user by using IAMUser
 func (i *IAMService) Update(id string, user *IAMUser) error {
 	var (
 		req *http.Request
-		res *http.Response
 		err error
 	)
 
 	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/user/%s", id), user)
-	if err != nil {
-		return err
-	}
-
-	res, err = i.client.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-	return ReturnErrorByHTTPStatusCode(res, 204)
+	return returnErrorHTTPSimple(i.client, req, err, 204)
 }
 
 // Get gets the desired IAMUuser from the domain by id
 func (i *IAMService) Get(id string, user *IAMUser) error {
 	var (
-		req      *http.Request
-		res      *http.Response
-		userByte []byte
-		err      error
+		req *http.Request
+		err error
 	)
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
-	if err != nil {
-		return err
-	}
-
-	res, err = i.client.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-	userByte, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return errResponseError
-	}
-
-	err = json.Unmarshal(userByte, &user)
-	if err != nil {
-		return errJSONUnmarshalError
-	}
-
-	return ReturnErrorByHTTPStatusCode(res, 200)
+	return returnErrorHTTPInterface(i.client, req, err, user, 200)
 }
 
 // Delete deletes the desired user from IAM by id
 func (i *IAMService) Delete(id string) error {
 	var (
 		req *http.Request
-		res *http.Response
 		err error
 	)
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
-	if err != nil {
-		return err
-	}
+	return returnErrorHTTPSimple(i.client, req, err, 204)
 
-	res, err = i.client.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	return ReturnErrorByHTTPStatusCode(res, 204)
 }
 
 // Search gets the desired objects in base of a search query

@@ -91,7 +91,7 @@ func (s *Search) Count(field string) (int, error) {
 	}
 
 	res, err = s.client.httpClient.Do(req)
-	if err = ReturnErrorByHTTPStatusCode(res, 200); err != nil {
+	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
 		return 0, err
 	}
 
@@ -142,7 +142,7 @@ func (s *Search) Average(field string) (float64, error) {
 
 	defer res.Body.Close()
 	resultByte, err = ioutil.ReadAll(res.Body)
-	if err = ReturnErrorByHTTPStatusCode(res, 200); err != nil {
+	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
 		return 0, err
 	}
 
@@ -188,7 +188,7 @@ func (s *Search) Sum(field string) (float64, error) {
 
 	defer res.Body.Close()
 	resultByte, err = ioutil.ReadAll(res.Body)
-	if err = ReturnErrorByHTTPStatusCode(res, 200); err != nil {
+	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
 		return 0, err
 	}
 

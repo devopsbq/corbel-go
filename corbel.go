@@ -1,16 +1,9 @@
 package corbel
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
-	"reflect"
 	"time"
-
-	"github.com/google/go-querystring/query"
 )
 
 var (
@@ -88,36 +81,6 @@ func (c *Client) URLFor(endpoint, uri string) string {
 	return fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
 }
 
-// NewRequest creates an API request.
-// method is the HTTP method to use
-// endpoint is the endpoint of SR to speak with
-// url is the url to query. it must be preceded by a slash.
-// body is, if specified, the value JSON encoded to be used as request body.
-func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (*http.Request, error) {
-	u, _ := url.Parse(c.URLFor(endpoint, urlStr))
-
-	buf := new(bytes.Buffer)
-	if body != nil {
-		err := json.NewEncoder(buf).Encode(body)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	req, err := http.NewRequest(method, u.String(), buf)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("User-Agent", c.UserAgent)
-	if c.CurrentToken != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
-	}
-	return req, nil
-}
-
 // Token returns the token to use as bearer. If the token has already expired
 // it refresh it.
 // TODO: Refresh token
@@ -186,37 +149,4 @@ func NewClientForEnvironment(httpClient *http.Client, environment, clientID, cli
 	thisClient.Resources = &ResourcesService{client: thisClient}
 
 	return thisClient, nil
-}
-
-func addOptions(s string, opt interface{}) (string, error) {
-	v := reflect.ValueOf(opt)
-
-	if v.Kind() == reflect.Ptr && v.IsNil() {
-		return s, nil
-	}
-
-	u, err := url.Parse(s)
-	if err != nil {
-		return s, err
-	}
-
-	qv, err := query.Values(opt)
-	if err != nil {
-		return s, err
-	}
-
-	u.RawQuery = qv.Encode()
-	return u.String(), nil
-}
-
-// ReturnErrorByHTTPStatusCode returns the http error code or nil if it returns the
-// desired error
-func ReturnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
-	if res.StatusCode == desiredStatusCode {
-		return nil
-	}
-	if http.StatusText(res.StatusCode) == "" {
-		return fmt.Errorf("HTTP Error %d", res.StatusCode)
-	}
-	return errors.New(http.StatusText(res.StatusCode))
 }
