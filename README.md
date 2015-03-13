@@ -3,7 +3,6 @@
 [![Coverage Status](https://coveralls.io/repos/fernandezvara/corbel-go/badge.svg?branch=master)](https://coveralls.io/r/fernandezvara/corbel-go?branch=master)
 
 # **Corbel-Go**
------
 
 corbel-go is an API library for work with [corbel](http://opensource.bq.com/). It currently supports:
 
@@ -12,12 +11,19 @@ corbel-go is an API library for work with [corbel](http://opensource.bq.com/). I
   > - Basic Authentication (username/password)
   > - Resources (get/create/update/delete/search)
 
-Note: library in active development; requires >= Go 1.3
+*Note:* Library in active development; requires >= Go 1.3
 
+-----
 
 ## **Usage/Sample Code**
 
 ### **Creating a client**
+
+The client is the key to use the platform. All information here is custom for each client since its generated for every application that needs to use it.
+
+Instancing the client allow to use it everywhere. Since Authorization can be for the application itself or its users on dynamic applications will be necessary to have several clients with several authorizations (one for each user) because you will have specific scopes based on your own permissions.
+
+See the Authorization part to get all the possible variations.
 
 ```Go
 // NewClient(http.Client, clientId, clientName, clientSecret, clientScopes,
@@ -29,7 +35,7 @@ client, _ = NewClient(nil, "someID", "", "someSecret", "", "", "HS256", 3000)
 
 **Getting token for client app**
 
-Using the client for application operations.
+When you will use the client for application purposes you must ask for a OauthToken to get the specific permissions, that normally are wide open than users.
 
 ```Go
 err = client.IAM.OauthToken()
@@ -37,11 +43,102 @@ err = client.IAM.OauthToken()
 
 **Getting token for user using basic auth**
 
-Using the client for user operations in the app.
+If the client will be used for operations as user you need validate and get the proper user token. User token will have all the permissions applied to that user that are custom for her.
 
 ```Go
 err = client.IAM.OauthTokenBasicAuth("username", "password")
 ```
+
+### **User Administration**
+
+All actions over users on the domain can be done if the application/user have the required permissions. All user interactions are done using the IAM (Identity and Authorization Management) endpoint.
+
+**IAM User definition**
+
+All operations for an user must be done using the IAMUser struct.
+
+```Go
+type IAMUser struct {
+	ID          string                 `json:"id,omitempty"`
+	Domain      string                 `json:"domain,omitempty"`
+	Username    string                 `json:"username,omitempty"`
+	Email       string                 `json:"email,omitempty"`
+	FirstName   string                 `json:"firstName,omitempty"`
+	LastName    string                 `json:"lastName,omitempty"`
+	ProfileURL  string                 `json:"profileUrl,omitempty"`
+	PhoneNumber string                 `json:"phoneNumber,omitempty"`
+	Scopes      []string               `json:"scopes,omitempty"`
+	Properties  map[string]interface{} `json:"properties,omitempty"`
+	Country     string                 `json:"country,omitempty"`
+	CreatedDate int                    `json:"createdDate,omitempty"`
+	CreatedBy   string                 `json:"createdBy,omitempty"`
+}
+```
+
+*NOTES:*
+- User properties is a map that allow to add arbitrary information of that user. All JSON serializable types are allowed. _Beware of those properties that can be empty, 0, false or nil, since it won't be exported if omitempty are used_.
+- Scopes can be an empty array if are defined default scopes for users on the domain definition.
+- CreatedDate and CreatedBy are managed by the platform itself, so any change there will be ignored.
+
+**User Creation**
+
+```Go
+anUserProperties := make(map[string]interface{})
+anUserProperties["string"] = "test string"
+anUserProperties["integer"] = 123456
+anUserProperties["float"] = 1.23
+anUserProperties["date"] = now
+
+anUser := IAMUser{
+  Domain:      "corbel-qa",
+  Username:    "corbel-go",
+  Email:       "corbel-go@corbel.org",
+  FirstName:   "Corbel",
+  LastName:    "Go",
+  ProfileURL:  "http://corbel.org/corbel-go",
+  PhoneNumber: "555-555-555",
+  Scopes:      []string{},
+  Properties:  anUserProperties,
+  Country:     "Somewhere",
+}
+
+err = client.IAM.Add(&anUser)
+```
+
+**User Get**
+
+```Go
+anUser2 := IAMUser{}
+err = client.IAM.Get("sampleId", &anUser2)
+```
+
+**User Update**
+
+```Go
+anUser.Country = "Internet"
+err = client.IAM.Update("sampleId", &anUser)
+```
+
+**User Deletion**
+
+```Go
+err = client.IAM.Delete("sampleId")
+```
+
+**User Search**
+
+```Go
+search := client.IAM.Search()
+search.Query.Eq["username"] = "corbel-go"
+
+var arrUsers []IAMUser
+
+err = search.Page(0, &arrUsers)
+```
+
+*NOTE*: Searching uses the same interface defined in detail on the Resources documentation part.
+
+
 ### **Resources**
 
 **Adding resource**
@@ -158,10 +255,9 @@ err = client.Resources.DeleteFromCollection("test:GoTestResource",
                                             "1234567890abcdef")
 ```
 
-
 ----
 
-#### **Contributing**
+### **Contributing**
 
  - Fork it
  - Create your feature branch (git checkout -b my-new-feature)
