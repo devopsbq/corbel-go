@@ -66,7 +66,6 @@ func (i *IAMService) Update(id string, user *IAMUser) error {
 
 // Get gets the desired IAMUuser from the domain by id
 func (i *IAMService) Get(id string, user *IAMUser) error {
-
 	var (
 		req      *http.Request
 		res      *http.Response
@@ -100,7 +99,6 @@ func (i *IAMService) Get(id string, user *IAMUser) error {
 
 // Delete deletes the desired user from IAM by id
 func (i *IAMService) Delete(id string) error {
-
 	var (
 		req *http.Request
 		res *http.Response
