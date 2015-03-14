@@ -11,6 +11,7 @@ type IAMUser struct {
 	Domain      string                 `json:"domain,omitempty"`
 	Username    string                 `json:"username,omitempty"`
 	Email       string                 `json:"email,omitempty"`
+	Password    string                 `json:"password,omitempty"`
 	FirstName   string                 `json:"firstName,omitempty"`
 	LastName    string                 `json:"lastName,omitempty"`
 	ProfileURL  string                 `json:"profileUrl,omitempty"`
@@ -53,6 +54,11 @@ func (i *IAMService) Get(id string, user *IAMUser) error {
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
 	return returnErrorHTTPInterface(i.client, req, err, user, 200)
+}
+
+// GetMe gets the user authenticated by the current token
+func (i *IAMService) GetMe(user *IAMUser) error {
+	return i.Get("me", user)
 }
 
 // Delete deletes the desired user from IAM by id

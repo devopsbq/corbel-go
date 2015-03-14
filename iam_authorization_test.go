@@ -87,14 +87,6 @@ func TestIAMOauthTokenBasicAuth(t *testing.T) {
 		t.Errorf("OauthTokenBasicAuth must not fill CurrentToken if user/password does not exists.")
 	}
 
-	// TODO! Fix this test with a user creation and deletion
-	err = client.IAM.OauthTokenBasicAuth("foouser", "foopass")
-	if err != nil {
-		t.Errorf("OauthTokenBasicAuth must not fail if client is correct. %s", err)
-	}
-
-	if got, want := client.CurrentToken, ""; got != want {
-		t.Errorf("OauthTokenBasicAuth must fill CurrentToken if user/password does not exists.")
-	}
+	// This test is done in iam_user_test.go withing the user creation workflow
 
 }
