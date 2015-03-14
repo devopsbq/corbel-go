@@ -292,6 +292,23 @@ err = client.Resources.AddRelation("test:MusicGroup", "12345",
                                    metadata)
 ```
 
+### **Move/Reorder target Resources in a Relation**
+
+Resources relation allows to reorder the items to be able to get them in the desired order in searches.
+
+Sample:
+Items: ["1", "2", "3"]
+MoveRelation "3", 1
+Items: ["3", "1", "2"]
+
+```Go
+// Move the Item "2" to the first position.
+err = client.Resources.MoveRelation("test:ToDoList", "12345",
+                                    "test:ToDoListItems",
+                                    "test:ToDoItem", "2",
+                                    1)
+```
+
 ### **Search Related Resources Information**
 
 To get relations you can use the RelationData struct if you don't added metadata or extend RelationData with your own data.
@@ -306,6 +323,7 @@ type RelationData struct {
 ```
 
 Sample with standard metadata.
+
 ```Go
 var arrRelationData []corbel.RelationData
 
@@ -315,6 +333,7 @@ err = search.Page(0, &arrRelationData)
 ```
 
 Sample with _custom_ metadata.
+
 ```Go
 type customRelationData struct {
 	Order       float64                  `json:"_order,omitempty"`
@@ -328,6 +347,18 @@ search = client.Resources.SearchRelation("test:Group", "12345",
                                          "test:Albums")
 err = search.Page(0, &arrRelationData)
 ```
+
+Sample with selected ordering.
+
+```
+var arrRelationData []customRelationData
+
+search = client.Resources.SearchRelation("test:Group", "12345",
+                                         "test:Albums")
+search.Sort.Asc = []string{"_order"}
+err = search.Page(0, &arrRelationData)
+```
+
 
 ### **Get Resource from Response**
 
