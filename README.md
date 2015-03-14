@@ -80,7 +80,7 @@ type IAMUser struct {
 - Scopes can be an empty array if are defined default scopes for users on the domain definition.
 - CreatedDate and CreatedBy are managed by the platform itself, so any change there will be ignored.
 
-**User Creation**
+#### **User Creation**
 
 ```Go
 anUserProperties := make(map[string]interface{})
@@ -105,27 +105,34 @@ anUser := IAMUser{
 err = client.IAM.Add(&anUser)
 ```
 
-**User Get**
+#### **User Get by ID**
 
 ```Go
 anUser2 := IAMUser{}
 err = client.IAM.Get("sampleId", &anUser2)
 ```
 
-**User Update**
+#### **User Get Current User**
+```Go
+currentUser := IAMUser{}
+err = client.IAM.GetMe(&currentUser)
+```
+
+
+#### **User Update**
 
 ```Go
 anUser.Country = "Internet"
 err = client.IAM.Update("sampleId", &anUser)
 ```
 
-**User Deletion**
+#### **User Deletion**
 
 ```Go
 err = client.IAM.Delete("sampleId")
 ```
 
-**User Search**
+#### **User Search**
 
 ```Go
 search := client.IAM.Search()
@@ -225,10 +232,10 @@ err = search.Page(0, &arrResourceForTest)
 **Aggregations**
 
 ```Go
-func (s *Search) Count(field string) (int, error)
-func (s *Search) CountAll() (int, error)
-func (s *Search) Average(field string) (float64, error)
-func (s *Search) Sum(field string) (float64, error)
+func (s *Search) Count(field string) (int, error) {}
+func (s *Search) CountAll() (int, error) {}
+func (s *Search) Average(field string) (float64, error) {}
+func (s *Search) Sum(field string) (float64, error) {}
 ```
 
 #### **Get resource**
@@ -254,6 +261,104 @@ err = client.Resources.UpdateInCollection("test:GoTestResource",
 err = client.Resources.DeleteFromCollection("test:GoTestResource",
                                             "1234567890abcdef")
 ```
+
+
+### **Relations between Resources**
+
+Resources can have related resources using collections. As sample think in a Music Group resource that have several Album resources.
+
+### **Add Related Resource to Collection**
+
+Adding a resource to a Collection automatically creates the Colection, so you don't need to be worried on Collection creation.
+All relations allow to add custom metadata. To query that metadata is posible to create custom metadata structs to use it later.
+
+```Go
+// Sample without metadata
+err = client.Resources.AddRelation("test:MusicGroup", "12345",
+                                   "test:Albums",
+                                   "test:Album", "23456",
+                                   nil)
+
+// Sample with custom metadata
+type groupAlbumRelation struct {
+  RecordLabel string `json:"recordLabel"`
+}
+metadata := groupAlbumRelation{
+  RecordLabel: "Sample Record Label",
+}
+err = client.Resources.AddRelation("test:MusicGroup", "12345",
+                                   "test:Albums",
+                                   "test:Album", "23456",
+                                   metadata)
+```
+
+### **Search Related Resources Information**
+
+To get relations you can use the RelationData struct if you don't added metadata or extend RelationData with your own data.
+
+```Go
+// RelationData definition.
+type RelationData struct {
+	Order float64                  `json:"_order,omitempty"`
+	ID    string                   `json:"id,omitempty"`
+	Links []map[string]interface{} `json:"links, omitempty"`
+}
+```
+
+Sample with standard metadata.
+```Go
+var arrRelationData []corbel.RelationData
+
+search = client.Resources.SearchRelation("test:Group", "12345",
+                                         "test:Albums")
+err = search.Page(0, &arrRelationData)
+```
+
+Sample with _custom_ metadata.
+```Go
+type customRelationData struct {
+	Order       float64                  `json:"_order,omitempty"`
+	ID          string                   `json:"id,omitempty"`
+	Links       []map[string]interface{} `json:"links, omitempty"`
+  RecordLabel string                   `json:"recordLabel"`
+}
+var arrRelationData []customRelationData
+
+search = client.Resources.SearchRelation("test:Group", "12345",
+                                         "test:Albums")
+err = search.Page(0, &arrRelationData)
+```
+
+### **Get Resource from Response**
+
+Searching for resources information does not return the target object itself, it returns a pointer to to plus the custom metadata (if added).
+
+```Go
+type Album struct {
+  Title           string `json:"title"`
+  PublicationYear int    `json:"publicationYear"`
+}
+
+var anAlbum Album
+
+err = client.Resources.GetFromRelationDefinition(arrRelationData[0].ID, &anAlbum)
+```
+
+### **Delete a Relation***
+
+```Go
+err = client.Resources.DeleteRelation("test:Group", "12345",
+                                      "test:Albums",
+                                      "test:Album", "23456")
+```
+
+### **Delete all Relations**
+
+```Go
+err = client.Resources.DeleteAllRelations("test:Group", "12345",
+                                          "test:Albums")
+```
+
 
 ----
 
