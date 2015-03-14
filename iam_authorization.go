@@ -2,9 +2,7 @@ package corbel
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -29,6 +27,9 @@ func (i *IAMService) OauthToken() error {
 //
 // API Docs: http://docs.silkroadiam.apiary.io/#reference/authorization/oauthtoken
 func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
+	var (
+		iamResponse iamOauthTokenResponse
+	)
 	signingMethod := jwt.GetSigningMethod(i.client.ClientJWTSigningMethod)
 	token := jwt.New(signingMethod)
 	// Required JWT Claims for SR
@@ -61,26 +62,13 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
 	}
 	req.Header.Add("User-Agent", i.client.UserAgent)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	res, err := i.client.httpClient.Do(req)
+	err = returnErrorHTTPInterface(i.client, req, err, &iamResponse, 200)
 	if err != nil {
-		return errHTTPNotAuthorized
-	}
-
-	defer res.Body.Close()
-	contents, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return errResponseError
-	}
-
-	var iamResponse iamOauthTokenResponse
-	err = json.Unmarshal(contents, &iamResponse)
-	if err != nil {
-		return errJSONUnmarshalError
+		return err
 	}
 
 	i.client.CurrentToken = iamResponse.AccessToken
-	i.client.CurrentTokenExpirationTime = iamResponse.ExpiresAt
+	i.client.CurrentTokenExpiresAt = iamResponse.ExpiresAt
 	i.client.CurrentRefreshToken = iamResponse.RefreshToken
 
 	return nil

@@ -79,8 +79,8 @@ func TestIAMOauthTokenBasicAuth(t *testing.T) {
 		10)
 
 	err = client.IAM.OauthTokenBasicAuth("username", "password")
-	if err != nil {
-		t.Errorf("OauthTokenBasicAuth must not fail if client is correct. %s", err)
+	if err.Error() != "Unauthorized" {
+		t.Errorf("OauthTokenBasicAuth must fail if client cannot be authorized. Got %s", err.Error())
 	}
 
 	if got, want := client.CurrentToken, ""; got != want {

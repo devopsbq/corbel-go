@@ -62,8 +62,8 @@ type Client struct {
 	// Token is the actual token to send as Authentication Bearer
 	CurrentToken string
 
-	// CurrentTokenExpirationTime is the unix time where the token will expire
-	CurrentTokenExpirationTime int64
+	// CurrentTokenExpiresAt is the unix time where the token will expire
+	CurrentTokenExpiresAt int64
 
 	// CurrentRefreshToken is the current refresh token received from the IAM service
 	CurrentRefreshToken string
@@ -85,7 +85,7 @@ func (c *Client) URLFor(endpoint, uri string) string {
 // it refresh it.
 // TODO: Refresh token
 func (c *Client) Token() string {
-	if c.CurrentTokenExpirationTime < time.Now().Unix() {
+	if c.CurrentTokenExpiresAt < time.Now().Unix() {
 		return c.CurrentToken
 	}
 	return ""
