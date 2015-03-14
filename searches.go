@@ -3,7 +3,6 @@ package corbel
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -35,10 +34,8 @@ type aggregationSum struct {
 // Page fills the struct array passed as parameter as paged search by pageNumber
 func (s *Search) Page(pageNumber int, result interface{}) error {
 	var (
-		resultByte []byte
-		req        *http.Request
-		res        *http.Response
-		err        error
+		req *http.Request
+		err error
 	)
 	opts := &SearchListOptions{
 		APIQuery:    s.Query.string(),
@@ -47,37 +44,15 @@ func (s *Search) Page(pageNumber int, result interface{}) error {
 		APIPageSize: s.PageSize,
 	}
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	if err != nil {
-		return err
-	}
-
-	res, err = s.client.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-	resultByte, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return errResponseError
-	}
-
-	err = json.Unmarshal(resultByte, &result)
-	if err != nil {
-		return errJSONUnmarshalError
-	}
-
-	return nil
+	return returnErrorHTTPInterface(s.client, req, err, result, 200)
 }
 
 // Count returns the aggregated count of an especific field in the search
 func (s *Search) Count(field string) (int, error) {
 	var (
-		resultByte []byte
-		req        *http.Request
-		res        *http.Response
-		err        error
-		aggrCount  aggregationCount
+		req       *http.Request
+		err       error
+		aggrCount aggregationCount
 	)
 	opts := &SearchListOptions{
 		APIQuery:       s.Query.string(),
@@ -86,24 +61,9 @@ func (s *Search) Count(field string) (int, error) {
 	}
 
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	err = returnErrorHTTPInterface(s.client, req, err, &aggrCount, 200)
 	if err != nil {
 		return 0, err
-	}
-
-	res, err = s.client.httpClient.Do(req)
-	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
-		return 0, err
-	}
-
-	defer res.Body.Close()
-	resultByte, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return 0, errResponseError
-	}
-
-	err = json.Unmarshal(resultByte, &aggrCount)
-	if err != nil {
-		return 0, errJSONUnmarshalError
 	}
 
 	return aggrCount.Count, nil
@@ -118,11 +78,9 @@ func (s *Search) CountAll() (int, error) {
 // Average returns the average of an especific field in the search
 func (s *Search) Average(field string) (float64, error) {
 	var (
-		resultByte []byte
-		req        *http.Request
-		res        *http.Response
-		err        error
-		aggrAvg    aggregationAvg
+		req     *http.Request
+		err     error
+		aggrAvg aggregationAvg
 	)
 
 	opts := &SearchListOptions{
@@ -131,24 +89,9 @@ func (s *Search) Average(field string) (float64, error) {
 		APIAggregation: fmt.Sprintf("{\"$avg\":\"%s\"}", field),
 	}
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	err = returnErrorHTTPInterface(s.client, req, err, &aggrAvg, 200)
 	if err != nil {
 		return 0, err
-	}
-
-	res, err = s.client.httpClient.Do(req)
-	if err != nil {
-		return 0, err
-	}
-
-	defer res.Body.Close()
-	resultByte, err = ioutil.ReadAll(res.Body)
-	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
-		return 0, err
-	}
-
-	err = json.Unmarshal(resultByte, &aggrAvg)
-	if err != nil {
-		return 0, errJSONUnmarshalError
 	}
 
 	return aggrAvg.Average, nil
@@ -163,11 +106,9 @@ func (s *Search) Average(field string) (float64, error) {
 // Sum returns the average of an especific field in the search as float
 func (s *Search) Sum(field string) (float64, error) {
 	var (
-		resultByte []byte
-		req        *http.Request
-		res        *http.Response
-		err        error
-		aggrSum    aggregationSum
+		req     *http.Request
+		err     error
+		aggrSum aggregationSum
 	)
 
 	opts := &SearchListOptions{
@@ -177,24 +118,9 @@ func (s *Search) Sum(field string) (float64, error) {
 	}
 
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	err = returnErrorHTTPInterface(s.client, req, err, &aggrSum, 200)
 	if err != nil {
 		return 0, err
-	}
-
-	res, err = s.client.httpClient.Do(req)
-	if err != nil {
-		return 0, err
-	}
-
-	defer res.Body.Close()
-	resultByte, err = ioutil.ReadAll(res.Body)
-	if err = returnErrorByHTTPStatusCode(res, 200); err != nil {
-		return 0, err
-	}
-
-	err = json.Unmarshal(resultByte, &aggrSum)
-	if err != nil {
-		return 0, errJSONUnmarshalError
 	}
 
 	return aggrSum.Sum, nil
