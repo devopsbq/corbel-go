@@ -26,8 +26,8 @@ func TestResourcesAddToCollection(t *testing.T) {
 		10)
 
 	err = client.IAM.OauthToken()
-	if got := err; got != nil {
-		t.Errorf("GetToken must not fail. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("GetToken must not fail. Got: %v  Want: nil", err)
 	}
 
 	type ResourceForTest struct {
@@ -49,17 +49,17 @@ func TestResourcesAddToCollection(t *testing.T) {
 
 	fmt.Println(string(jsonEncodedStruct))
 	err = client.Resources.AddToCollection("test:GoTestResource", test1)
-	if got := err; got != nil {
-		t.Errorf("Failed to AddToCollection a struct. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to AddToCollection a struct. Got: %v  Want: nil", err)
 	}
 	search = client.Resources.SearchCollection("test:GoTestResource")
 	err = search.Page(0, &arrResourceForTest)
-	if got := err; got != nil {
-		t.Errorf("Failed to SearchCollection an array of structs. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to SearchCollection an array of structs. Got: %v  Want: nil", err)
 	}
 	err = client.Resources.DeleteFromCollection("test:GoTestResource", arrResourceForTest[0].ID)
-	if got := err; got != nil {
-		t.Errorf("Failed to DeleteFromCollection from item in an array of structs. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to DeleteFromCollection from item in an array of structs. Got: %v  Want: nil", err)
 	}
 }
 
@@ -83,8 +83,8 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		10)
 
 	err = client.IAM.OauthToken()
-	if got := err; got != nil {
-		t.Errorf("GetToken must not fail. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("GetToken must not fail. Got: %v  Want: nil", err)
 	}
 
 	type ResourceForTest struct {
@@ -105,14 +105,14 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	}
 
 	err = client.Resources.AddToCollection("test:GoTestResource", &test1)
-	if got := err; got != nil {
-		t.Errorf("Failed to AddFromCollection to a struct. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to AddFromCollection to a struct. Got: %v  Want: nil", err)
 	}
 
 	search = client.Resources.SearchCollection("test:GoTestResource")
 	err = search.Page(0, &arrResourceForTest)
-	if got := err; got != nil {
-		t.Errorf("Failed to SearchCollection.Page to an array of structs. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to SearchCollection.Page to an array of structs. Got: %v  Want: nil", err)
 	}
 	if got, want := len(arrResourceForTest), 1; got != want {
 		t.Errorf("Bad number of structs returned. Got: %v. Want: %v", got, want)
@@ -134,8 +134,8 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	test2 := ResourceForTest{}
 
 	err = client.Resources.GetFromCollection("test:GoTestResource", arrResourceForTest[0].ID, &test2)
-	if got := err; got != nil {
-		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: nil", got)
+	if err != nil {
+		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: nil", err)
 	}
 	if got, want := test2.Key1, test1.Key1; got != want {
 		t.Errorf("Failed to GetFromCollection to a struct. Got: %v  Want: %v", got, want)

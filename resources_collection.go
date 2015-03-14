@@ -45,6 +45,17 @@ func (r *ResourcesService) GetFromCollection(collectionName, id string, resource
 	return returnErrorHTTPInterface(r.client, req, err, resource, 200)
 }
 
+// GetFromRelationDefinition gets the desired object from the collection by id
+func (r *ResourcesService) GetFromRelationDefinition(id string, resource interface{}) error {
+	var (
+		req *http.Request
+		err error
+	)
+
+	req, err = r.client.NewRequest("GET", "resources", fmt.Sprintf("/v1.0/resource/%s", id), nil)
+	return returnErrorHTTPInterface(r.client, req, err, resource, 200)
+}
+
 // DeleteFromCollection deletes the desired resource from the platform by id
 func (r *ResourcesService) DeleteFromCollection(collectionName, id string) error {
 

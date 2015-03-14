@@ -66,6 +66,7 @@ func (s *Search) Page(pageNumber int, result interface{}) error {
 	if err != nil {
 		return errJSONUnmarshalError
 	}
+	fmt.Println(string(resultByte))
 
 	return nil
 }
