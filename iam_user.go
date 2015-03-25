@@ -23,8 +23,8 @@ type IAMUser struct {
 	CreatedBy   string                 `json:"createdBy,omitempty"`
 }
 
-// Add adds an IAMUser defined struct to the domain of the client
-func (i *IAMService) Add(user *IAMUser) error {
+// UserAdd adds an IAMUser defined struct to the domain of the client
+func (i *IAMService) UserAdd(user *IAMUser) error {
 	var (
 		req *http.Request
 		err error
@@ -34,8 +34,8 @@ func (i *IAMService) Add(user *IAMUser) error {
 	return returnErrorHTTPSimple(i.client, req, err, 201)
 }
 
-// Update updates an user by using IAMUser
-func (i *IAMService) Update(id string, user *IAMUser) error {
+// UserUpdate updates an user by using IAMUser
+func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 	var (
 		req *http.Request
 		err error
@@ -45,8 +45,8 @@ func (i *IAMService) Update(id string, user *IAMUser) error {
 	return returnErrorHTTPSimple(i.client, req, err, 204)
 }
 
-// Get gets the desired IAMUuser from the domain by id
-func (i *IAMService) Get(id string, user *IAMUser) error {
+// UserGet gets the desired IAMUuser from the domain by id
+func (i *IAMService) UserGet(id string, user *IAMUser) error {
 	var (
 		req *http.Request
 		err error
@@ -56,13 +56,13 @@ func (i *IAMService) Get(id string, user *IAMUser) error {
 	return returnErrorHTTPInterface(i.client, req, err, user, 200)
 }
 
-// GetMe gets the user authenticated by the current token
-func (i *IAMService) GetMe(user *IAMUser) error {
-	return i.Get("me", user)
+// UserGetMe gets the user authenticated by the current token
+func (i *IAMService) UserGetMe(user *IAMUser) error {
+	return i.UserGet("me", user)
 }
 
-// Delete deletes the desired user from IAM by id
-func (i *IAMService) Delete(id string) error {
+// UserDelete deletes the desired user from IAM by id
+func (i *IAMService) UserDelete(id string) error {
 	var (
 		req *http.Request
 		err error
@@ -70,10 +70,9 @@ func (i *IAMService) Delete(id string) error {
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
 	return returnErrorHTTPSimple(i.client, req, err, 204)
-
 }
 
-// Search gets the desired objects in base of a search query
-func (i *IAMService) Search() *Search {
+// UserSearch gets the desired objects in base of a search query
+func (i *IAMService) UserSearch() *Search {
 	return NewSearch(i.client, "iam", "/v1.0/user")
 }

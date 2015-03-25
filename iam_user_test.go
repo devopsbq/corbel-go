@@ -70,12 +70,12 @@ func TestIAMUser(t *testing.T) {
 		Country:     "Somewhere",
 	}
 
-	err = client.IAM.Add(&anUser)
+	err = client.IAM.UserAdd(&anUser)
 	if err != nil {
 		t.Errorf("Error creating user. Got: %v  Want: nil", err)
 	}
 
-	search := client.IAM.Search()
+	search := client.IAM.UserSearch()
 	search.Query.Eq["username"] = "corbel-go"
 
 	var arrUsers []IAMUser
@@ -92,7 +92,7 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	anUser2 := IAMUser{}
-	err = client.IAM.Get(arrUsers[0].ID, &anUser2)
+	err = client.IAM.UserGet(arrUsers[0].ID, &anUser2)
 	if err != nil {
 		t.Errorf("Error getting users. Got: %v  Want: nil", err)
 	}
@@ -101,13 +101,13 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	anUser2.Country = "Internet"
-	err = client.IAM.Update(anUser2.ID, &anUser2)
+	err = client.IAM.UserUpdate(anUser2.ID, &anUser2)
 	if err != nil {
 		t.Errorf("Error updating users. Got: %v  Want: nil", err)
 	}
 
 	anUser3 := IAMUser{}
-	err = client.IAM.Get(anUser2.ID, &anUser3)
+	err = client.IAM.UserGet(anUser2.ID, &anUser3)
 	if err != nil {
 		t.Errorf("Error getting users. Got: %v  Want: nil", err)
 	}
@@ -127,7 +127,7 @@ func TestIAMUser(t *testing.T) {
 
 	// GetMe
 	var meUser IAMUser
-	err = clientForUser.IAM.GetMe(&meUser)
+	err = clientForUser.IAM.UserGetMe(&meUser)
 	if err != nil {
 		t.Errorf("GetMe must not fail if client and token are correct. Got: %s", err)
 	}
@@ -136,7 +136,7 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("GetMe returned a different user than validated.")
 	}
 
-	err = client.IAM.Delete(anUser3.ID)
+	err = client.IAM.UserDelete(anUser3.ID)
 	if err != nil {
 		t.Errorf("Error deleting users. Got: %v  Want: nil", err)
 	}

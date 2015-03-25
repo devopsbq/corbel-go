@@ -29,6 +29,8 @@ func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (
 		}
 	}
 
+	// fmt.Println(u.String()) // use for debug
+
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
@@ -67,6 +69,8 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, err error, obje
 	if err != nil {
 		return errJSONUnmarshalError
 	}
+
+	//fmt.Println(string(objectByte)) // for debug
 
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
 }
