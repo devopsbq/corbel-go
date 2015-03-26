@@ -70,7 +70,7 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, err error, obje
 		return errJSONUnmarshalError
 	}
 
-	//fmt.Println(string(objectByte)) // for debug
+	// fmt.Println(string(objectByte)) // for debug
 
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
 }

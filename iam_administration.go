@@ -43,6 +43,20 @@ type IAMRule struct {
 	TokenType  string   `json:"tokenType"`
 }
 
+// IAMClient is the representation of a Client object used by IAM
+type IAMClient struct {
+	ID                       string   `json:"id,omitempty"`
+	Key                      string   `json:"key"`
+	Name                     string   `json:"name"`
+	Domain                   string   `json:"domain"`
+	Version                  string   `json:"version,omitempty"`
+	SignatureAlgorithm       string   `json:"signatureAlgorithm,omitempty"`
+	Scopes                   []string `json:"scopes,omitempty"`
+	ClientSideAuthentication bool     `json:"clientSideAuthentication"`
+	ResetURL                 string   `json:"resetUrl,omitempty"`
+	ResetNotificationID      string   `json:"resetNotificationId,omitempty"`
+}
+
 // IAMScope is the representation of a Scope object used by IAM
 type IAMScope struct {
 	ID         string            `json:"id"`
@@ -51,12 +65,6 @@ type IAMScope struct {
 	Scopes     []string          `json:"scopes,omitempty"`
 	Parameters map[string]string `json:"parameters,omitempty"`
 	Rules      []IAMRule         `json:"rules,omitempty"`
-}
-
-// IAMClient is the representation of a Client object used by IAM
-type IAMClient struct {
-	ID     string `json:"id,omitempty"`
-	Domain string `json:"id,omitempty"`
 }
 
 // DomainAdd adds an Domain defined struct to the platform
@@ -108,55 +116,6 @@ func (i *IAMService) DomainSearch() *Search {
 	return NewSearch(i.client, "iam", "/v1.0/domain")
 }
 
-// ScopeAdd adds an Scope defined struct to the platform
-func (i *IAMService) ScopeAdd(scope *IAMScope) error {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("POST", "iam", "/v1.0/scope/", scope)
-	return returnErrorHTTPSimple(i.client, req, err, 201)
-}
-
-// ScopeUpdate updates an scope by using IAMScope
-func (i *IAMService) ScopeUpdate(id string, scope *IAMScope) error {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/scope/%s", id), scope)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
-}
-
-// ScopeGet gets the desired IAMScope from the scope by id
-func (i *IAMService) ScopeGet(id string, scope *IAMScope) error {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
-	return returnErrorHTTPInterface(i.client, req, err, scope, 200)
-}
-
-// ScopeDelete deletes the desired scope from IAM by id
-func (i *IAMService) ScopeDelete(id string) error {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
-}
-
-// ScopeSearch gets the desired objects in base of a search query
-func (i *IAMService) ScopeSearch() *Search {
-	return NewSearch(i.client, "iam", "/v1.0/scope")
-}
-
 // ClientAdd adds an Client defined struct to the platform
 func (i *IAMService) ClientAdd(client *IAMClient) error {
 	var (
@@ -203,5 +162,48 @@ func (i *IAMService) ClientDelete(domainName, id string) error {
 
 // ClientSearch gets the desired objects in base of a search query
 func (i *IAMService) ClientSearch(domainName string) *Search {
-	return NewSearch(i.client, "iam", "/v1.0/domain/%s/client")
+	return NewSearch(i.client, "iam", fmt.Sprintf("/v1.0/domain/%s/client", domainName))
+}
+
+// ScopeAdd adds an Scope defined struct to the platform
+func (i *IAMService) ScopeAdd(scope *IAMScope) error {
+	var (
+		req *http.Request
+		err error
+	)
+
+	req, err = i.client.NewRequest("POST", "iam", "/v1.0/scope/", scope)
+	return returnErrorHTTPSimple(i.client, req, err, 201)
+}
+
+// ScopeUpdate updates an scope by using IAMScope
+func (i *IAMService) ScopeUpdate(scope *IAMScope) error {
+	return i.ScopeAdd(scope)
+}
+
+// ScopeGet gets the desired IAMScope from the scope by id
+func (i *IAMService) ScopeGet(id string, scope *IAMScope) error {
+	var (
+		req *http.Request
+		err error
+	)
+
+	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
+	return returnErrorHTTPInterface(i.client, req, err, scope, 200)
+}
+
+// ScopeDelete deletes the desired scope from IAM by id
+func (i *IAMService) ScopeDelete(id string) error {
+	var (
+		req *http.Request
+		err error
+	)
+
+	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
+	return returnErrorHTTPSimple(i.client, req, err, 204)
+}
+
+// ScopeSearch gets the desired objects in base of a search query
+func (i *IAMService) ScopeSearch() *Search {
+	return NewSearch(i.client, "iam", "/v1.0/scope")
 }

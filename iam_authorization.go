@@ -99,8 +99,5 @@ func (i *IAMService) OauthTokenUpgrade(assetsToken string) error {
 	if res.StatusCode == 401 {
 		return errHTTPNotAuthorized
 	}
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
