@@ -202,8 +202,3 @@ func (i *IAMService) ScopeDelete(id string) error {
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
 	return returnErrorHTTPSimple(i.client, req, err, 204)
 }
-
-// ScopeSearch gets the desired objects in base of a search query
-func (i *IAMService) ScopeSearch() *Search {
-	return NewSearch(i.client, "iam", "/v1.0/scope")
-}
