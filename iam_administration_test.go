@@ -7,9 +7,9 @@ import (
 
 func TestIAM(t *testing.T) {
 
-	// if os.Getenv("IAM_CLIENTID") == "" || os.Getenv("IAM_CLIENTSECRET") == "" || os.Getenv("IAM_CLIENT_DOMAIN") == "" {
-	// 	t.Skip("Skipping test since no valid keys passed to the test.")
-	// }
+	if os.Getenv("IAM_CLIENTID") == "" || os.Getenv("IAM_CLIENTSECRET") == "" || os.Getenv("IAM_CLIENT_DOMAIN") == "" {
+		t.Skip("Skipping test since no valid keys passed to the test.")
+	}
 
 	var (
 		client       *Client
