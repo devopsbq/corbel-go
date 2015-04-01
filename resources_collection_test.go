@@ -1,17 +1,13 @@
 package corbel
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestResourcesAddToCollection(t *testing.T) {
 
 	var (
-		client            *Client
-		search            *Search
-		err               error
-		jsonEncodedStruct []byte
+		client *Client
+		search *Search
+		err    error
 	)
 
 	client, err = NewClientForEnvironment(
@@ -47,7 +43,6 @@ func TestResourcesAddToCollection(t *testing.T) {
 
 	var arrResourceForTest []ResourceForTest
 
-	fmt.Println(string(jsonEncodedStruct))
 	err = client.Resources.AddToCollection("test:GoTestResource", test1)
 	if err != nil {
 		t.Errorf("Failed to AddToCollection a struct. Got: %v  Want: nil", err)
