@@ -115,6 +115,16 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("User did not updated successfully")
 	}
 
+	// User Exists by username?
+	if exists := client.IAM.UserExists("corbel-go"); exists != true {
+		t.Errorf("UserExists failed by username. Expect: true, Got: %t", exists)
+	}
+
+	// User Exists by username?
+	if exists := client.IAM.UserExists("non-corbel-go"); exists != false {
+		t.Errorf("UserExists failed by username. Expect: false, Got: %t", exists)
+	}
+
 	// Basic Auth
 	err = clientForUser.IAM.OauthTokenBasicAuth(anUser.Username, anUser.Password)
 	if err != nil {

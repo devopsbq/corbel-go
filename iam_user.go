@@ -34,6 +34,20 @@ func (i *IAMService) UserAdd(user *IAMUser) error {
 	return returnErrorHTTPSimple(i.client, req, err, 201)
 }
 
+// UserExists checks if an user exists in the domain of the client
+func (i *IAMService) UserExists(username string) bool {
+	var (
+		req *http.Request
+		err error
+	)
+
+	req, err = i.client.NewRequest("HEAD", "iam", fmt.Sprintf("/v1.0/username/%s", username), nil)
+	if returnErrorHTTPSimple(i.client, req, err, 200) != nil {
+		return false
+	}
+	return true
+}
+
 // UserUpdate updates an user by using IAMUser
 func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 	var (
