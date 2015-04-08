@@ -16,7 +16,7 @@ type IAMUser struct {
 	LastName    string                 `json:"lastName,omitempty"`
 	ProfileURL  string                 `json:"profileUrl,omitempty"`
 	PhoneNumber string                 `json:"phoneNumber,omitempty"`
-	Scopes      []string               `json:"scopes,omitempty"`
+	Scopes      []string               `json:"scopes"`
 	Properties  map[string]interface{} `json:"properties,omitempty"`
 	Country     string                 `json:"country,omitempty"`
 	CreatedDate int                    `json:"createdDate,omitempty"`
@@ -30,7 +30,7 @@ func (i *IAMService) UserAdd(user *IAMUser) error {
 		err error
 	)
 
-	req, err = i.client.NewRequest("POST", "iam", "/v1.0/user/", user)
+	req, err = i.client.NewRequest("POST", "iam", "/v1.0/user", user)
 	return returnErrorHTTPSimple(i.client, req, err, 201)
 }
 

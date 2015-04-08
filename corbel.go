@@ -71,6 +71,7 @@ type Client struct {
 	// IAM endpoint struct
 	IAM       *IAMService
 	Resources *ResourcesService
+	Assets    *AssetsService
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -147,6 +148,7 @@ func NewClientForEnvironment(httpClient *http.Client, environment, clientID, cli
 
 	thisClient.IAM = &IAMService{client: thisClient}
 	thisClient.Resources = &ResourcesService{client: thisClient}
+	thisClient.Assets = &AssetsService{client: thisClient}
 
 	return thisClient, nil
 }

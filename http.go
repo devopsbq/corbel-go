@@ -29,8 +29,6 @@ func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (
 		}
 	}
 
-	// fmt.Println(u.String()) // use for debug
-
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
@@ -42,6 +40,9 @@ func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (
 	if c.CurrentToken != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
 	}
+	// fmt.Println(u.String())                     // for debug
+	// fmt.Println(buf.String())                   // for debug
+	// fmt.Println("CurrentToken", c.CurrentToken) // for debug
 	return req, nil
 }
 
@@ -87,6 +88,10 @@ func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desired
 	if err != nil {
 		return err
 	}
+
+	// defer res.Body.Close()
+	// objectByte, _ := ioutil.ReadAll(res.Body)
+	// fmt.Println(string(objectByte)) // for debug
 
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
 }

@@ -135,6 +135,11 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("OauthTokenBasicAuth must  fill CurrentToken if user/password does not exists.")
 	}
 
+	err = clientForUser.Assets.UpgradeToken()
+	if err != nil {
+		t.Errorf("Assets.UpgradeToken() must not fail if user and client are correct. Got: %s", err)
+	}
+
 	// GetMe
 	var meUser IAMUser
 	err = clientForUser.IAM.UserGetMe(&meUser)
