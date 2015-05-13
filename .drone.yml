@@ -1,0 +1,10 @@
+image: bradrydzewski/go:1.3
+env:
+  - GOPATH=/var/cache/drone
+script:
+  - go build
+  - go test -v
+notify:
+  email:
+    recipients:
+      - antonio.fernandez@bq.com
