@@ -16,7 +16,7 @@ var (
 // init defines constants that will be used later
 func init() {
 	userAgent = fmt.Sprintf("corbel-go/%s", Version)
-	allowedEnvironments = []string{"production", "staging", "current", "next", "qa", "int"}
+	allowedEnvironments = []string{"production", "staging", "current", "next", "qa", "int", "demo"}
 	allowedEndpoints = []string{"iam", "oauth", "assets", "resources"}
 	allowedJTWSigningMethods = []string{"HS256", "RSA"}
 }

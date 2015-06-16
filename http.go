@@ -13,12 +13,14 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-// NewRequest creates an API request.
+// NewRequestContentType creates an API request using 'application/json', most common api query.
 // method is the HTTP method to use
 // endpoint is the endpoint of SR to speak with
-// url is the url to query. it must be preceded by a slash.
+// urlStr is the url to query. it must be preceded by a slash.
+// headerContentType is the header['Content-Type'] of the request.
+// headerAccept is the header['Accept'] of the request.
 // body is, if specified, the value JSON encoded to be used as request body.
-func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentType, headerAccept string, body interface{}) (*http.Request, error) {
 	u, _ := url.Parse(c.URLFor(endpoint, urlStr))
 
 	buf := new(bytes.Buffer)
@@ -34,16 +36,25 @@ func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (
 		return nil, err
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", headerContentType)
+	req.Header.Add("Accept", headerAccept)
 	req.Header.Add("User-Agent", c.UserAgent)
 	if c.CurrentToken != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
 	}
-	// fmt.Println(u.String())                     // for debug
-	// fmt.Println(buf.String())                   // for debug
+	// fmt.Println(u.String())   // for debug
+	// fmt.Println(buf.String()) // for debug
 	// fmt.Println("CurrentToken", c.CurrentToken) // for debug
 	return req, nil
+}
+
+// NewRequest creates an API request using 'application/json', most common api query.
+// method is the HTTP method to use
+// endpoint is the endpoint of SR to speak with
+// url is the url to query. it must be preceded by a slash.
+// body is, if specified, the value JSON encoded to be used as request body.
+func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (*http.Request, error) {
+	return c.NewRequestContentType(method, endpoint, urlStr, "application/json", "application/json", body)
 }
 
 func returnErrorHTTPInterface(client *Client, req *http.Request, err error, object interface{}, desiredStatusCode int) error {
