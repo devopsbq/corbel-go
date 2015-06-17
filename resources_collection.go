@@ -7,7 +7,7 @@ import (
 
 // AddToCollection add the required struct formated as json to the desired collection
 // resource must have exported variables and optionally its representation as JSON.
-func (r *ResourcesService) AddToCollection(collectionName string, resource interface{}) error {
+func (r *ResourcesService) AddToCollection(collectionName string, resource interface{}) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -26,7 +26,8 @@ func (r *ResourcesService) UpdateInCollection(collectionName, id string, resourc
 	)
 
 	req, err = r.client.NewRequest("PUT", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), resource)
-	return returnErrorHTTPSimple(r.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
+	return err
 }
 
 // SearchCollection gets the desired objects in base of a search query
@@ -42,7 +43,8 @@ func (r *ResourcesService) GetFromCollection(collectionName, id string, resource
 	)
 
 	req, err = r.client.NewRequest("GET", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), nil)
-	return returnErrorHTTPInterface(r.client, req, err, resource, 200)
+	_, err = returnErrorHTTPInterface(r.client, req, err, resource, 200)
+	return err
 }
 
 // GetFromRelationDefinition gets the desired object from the collection by id
@@ -53,7 +55,8 @@ func (r *ResourcesService) GetFromRelationDefinition(id string, resource interfa
 	)
 
 	req, err = r.client.NewRequest("GET", "resources", fmt.Sprintf("/v1.0/resource/%s", id), nil)
-	return returnErrorHTTPInterface(r.client, req, err, resource, 200)
+	_, err = returnErrorHTTPInterface(r.client, req, err, resource, 200)
+	return err
 }
 
 // DeleteFromCollection deletes the desired resource from the platform by id
@@ -65,5 +68,6 @@ func (r *ResourcesService) DeleteFromCollection(collectionName, id string) error
 	)
 
 	req, err = r.client.NewRequest("DELETE", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), nil)
-	return returnErrorHTTPSimple(r.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
+	return err
 }

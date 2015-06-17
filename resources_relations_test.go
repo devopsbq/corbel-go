@@ -45,7 +45,7 @@ func TestResourcesRelations(t *testing.T) {
 		Key4: true,
 	}
 
-	err = client.Resources.AddToCollection("test:GoTestOrigin", &test1)
+	_, err = client.Resources.AddToCollection("test:GoTestOrigin", &test1)
 	if err != nil {
 		t.Errorf("Failed to AddToCollection to a struct. Got: %v  Want: nil", err)
 	}
@@ -57,7 +57,7 @@ func TestResourcesRelations(t *testing.T) {
 		Key4: true,
 	}
 
-	err = client.Resources.AddToCollection("test:GoTestDestination", &test2)
+	_, err = client.Resources.AddToCollection("test:GoTestDestination", &test2)
 	if err != nil {
 		t.Errorf("Failed to AddToCollection to a struct. Got: %v  Want: nil", err)
 	}
@@ -69,7 +69,7 @@ func TestResourcesRelations(t *testing.T) {
 		Key4: true,
 	}
 
-	err = client.Resources.AddToCollection("test:GoTestDestination", &test3)
+	_, err = client.Resources.AddToCollection("test:GoTestDestination", &test3)
 	if err != nil {
 		t.Errorf("Failed to AddToCollection to a struct. Got: %v  Want: nil", err)
 	}
@@ -108,12 +108,12 @@ func TestResourcesRelations(t *testing.T) {
 		Field2: "data for field2",
 	}
 
-	err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[0].ID, relData)
+	_, err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[0].ID, relData)
 	if err != nil {
 		t.Errorf("Failed to first AddRelation. Got: %v  Want: nil", err)
 	}
 
-	err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[1].ID, nil)
+	_, err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[1].ID, nil)
 	if err != nil {
 		t.Errorf("Failed to second AddRelation. Got: %v  Want: nil", err)
 	}
@@ -138,7 +138,7 @@ func TestResourcesRelations(t *testing.T) {
 		t.Errorf("Bad number of structs returned. Got: %v. Want: %v", got, want)
 	}
 
-	err = client.Resources.MoveRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[1].ID, 1)
+	_, err = client.Resources.MoveRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[1].ID, 1)
 	if err != nil {
 		t.Errorf("Failed to MoveRelation. Got: %v  Want: nil", err)
 	}
@@ -192,7 +192,7 @@ func TestResourcesRelations(t *testing.T) {
 		t.Errorf("Failed to DeleteRelation. Got: %v  Want: nil", err)
 	}
 
-	err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[0].ID, relData)
+	_, err = client.Resources.AddRelation("test:GoTestOrigin", arrResourceForTest[0].ID, "test:GoTestRelation", "test:GoTestDestination", arrResourceForTestDest[0].ID, relData)
 	if err != nil {
 		t.Errorf("Failed to AddRelation. Got: %v  Want: nil", err)
 	}

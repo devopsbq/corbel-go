@@ -43,7 +43,7 @@ func TestResourcesAddToCollection(t *testing.T) {
 
 	var arrResourceForTest []ResourceForTest
 
-	err = client.Resources.AddToCollection("test:GoTestResource", test1)
+	_, err = client.Resources.AddToCollection("test:GoTestResource", test1)
 	if err != nil {
 		t.Errorf("Failed to AddToCollection a struct. Got: %v  Want: nil", err)
 	}
@@ -99,7 +99,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		Key4: true,
 	}
 
-	err = client.Resources.AddToCollection("test:GoTestResource", &test1)
+	_, err = client.Resources.AddToCollection("test:GoTestResource", &test1)
 	if err != nil {
 		t.Errorf("Failed to AddFromCollection to a struct. Got: %v  Want: nil", err)
 	}

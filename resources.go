@@ -7,3 +7,8 @@ package corbel
 type ResourcesService struct {
 	client *Client
 }
+
+// Resource te
+type Resource struct {
+	ACL map[string]string
+}

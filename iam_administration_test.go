@@ -1,13 +1,16 @@
 package corbel
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
 func TestIAM(t *testing.T) {
 
 	if os.Getenv("IAM_CLIENTID") == "" || os.Getenv("IAM_CLIENTSECRET") == "" || os.Getenv("IAM_CLIENT_DOMAIN") == "" {
+		fmt.Println("Skipping TestIAM")
 		t.Skip("Skipping test since no valid keys passed to the test.")
 	}
 
@@ -22,15 +25,16 @@ func TestIAM(t *testing.T) {
 		arrClients   []IAMClient
 		sourceScope  IAMScope
 		targetScope  IAMScope
+		location     string
 	)
 
 	client, err = NewClientForEnvironment(
 		nil,
-		"int",
+		"qa",
 		os.Getenv("IAM_CLIENTID"),
 		"iam-client",
 		os.Getenv("IAM_CLIENTSECRET"),
-		"iam:comp:root",
+		"silkroad-qa:root",
 		os.Getenv("IAM_CLIENT_DOMAIN"),
 		"HS256",
 		10)
@@ -53,13 +57,17 @@ func TestIAM(t *testing.T) {
 		UserProfileFields: []string{"firstName", "lastName"},
 	}
 
-	err = client.IAM.DomainAdd(&sourceDomain)
+	location, err = client.IAM.DomainAdd(&sourceDomain)
 	if err != nil {
 		t.Errorf("Error adding domain. Got: %v  Want: nil", err)
 	}
 
+	if location == "" {
+		t.Errorf("Location is empty: '%s'", location)
+	}
+
 	searchDomain := client.IAM.DomainSearch()
-	searchDomain.Query.Eq["id"] = "corbel-go-test-domain"
+	searchDomain.Query.Eq["id"] = "silkroad-qa:corbel-go-test-domain"
 	err = searchDomain.Page(0, &arrDomains)
 	if err != nil {
 		t.Errorf("Error searching domains. Got: %v  Want: nil", err)
@@ -68,6 +76,9 @@ func TestIAM(t *testing.T) {
 	if got, want := len(arrDomains), 1; got != want {
 		t.Errorf("Wrong number of domains returned on the search. Got: %v. Want: %v.", got, want)
 	}
+
+	// sourceDomain new id = parentDomain + domainID
+	sourceDomain.ID = "silkroad-qa:corbel-go-test-domain"
 
 	if got, want := sourceDomain.ID, arrDomains[0].ID; got != want {
 		t.Errorf("Data returned on search does not match with the data inserted. Got: %v. Want: %v.", got, want)
@@ -91,19 +102,18 @@ func TestIAM(t *testing.T) {
 
 	// Clients
 	sourceClient = IAMClient{
-		ID:                 "aaaa",
 		Name:               "corbel-go-test-client",
-		Domain:             "corbel-go-test-domain",
+		Domain:             sourceDomain.ID,
 		Key:                "abcdefabcdefabcdefabcdefabcdefabcdefabcdef",
 		SignatureAlgorithm: "HS256",
 	}
 
-	err = client.IAM.ClientAdd(&sourceClient)
+	location, err = client.IAM.ClientAdd(&sourceClient)
 	if err != nil {
 		t.Errorf("Error creating client. Got: %v  Want: nil", err)
 	}
 
-	searchClient := client.IAM.ClientSearch("corbel-go-test-domain")
+	searchClient := client.IAM.ClientSearch(sourceDomain.ID)
 	searchClient.Query.Eq["name"] = "corbel-go-test-client"
 	err = searchClient.Page(0, &arrClients)
 	if err != nil {
@@ -114,18 +124,18 @@ func TestIAM(t *testing.T) {
 		t.Errorf("Wrong number of domains returned on the search. Got: %v. Want: %v.", got, want)
 	}
 
-	if got, want := sourceClient.ID, arrClients[0].ID; got != want {
+	if got, want := extractID(location), arrClients[0].ID; got != want {
 		t.Errorf("Data returned on search does not match with the data inserted. Got: %v. Want: %v.", got, want)
 	}
 
 	sourceClient.Scopes = []string{"corbel:go:test"}
 
-	err = client.IAM.ClientUpdate(sourceClient.ID, &sourceClient)
+	err = client.IAM.ClientUpdate(extractID(location), &sourceClient)
 	if err != nil {
 		t.Errorf("Error updating client. Got: %v  Want: nil", err)
 	}
 
-	err = client.IAM.ClientGet("corbel-go-test-domain", sourceClient.ID, &targetClient)
+	err = client.IAM.ClientGet(sourceDomain.ID, extractID(location), &targetClient)
 	if err != nil {
 		t.Errorf("Error getting client. Got: %v  Want: nil", err)
 	}
@@ -148,14 +158,14 @@ func TestIAM(t *testing.T) {
 		Rules:    []IAMRule{sourceSopeRule1},
 	}
 
-	err = client.IAM.ScopeAdd(&sourceScope)
+	_, err = client.IAM.ScopeAdd(&sourceScope)
 	if err != nil {
 		t.Errorf("Error creating scope. Got: %v  Want: nil", err)
 	}
 
 	sourceScope.Scopes = []string{"corbel:go:test1"}
 
-	err = client.IAM.ScopeUpdate(&sourceScope)
+	_, err = client.IAM.ScopeUpdate(&sourceScope)
 	if err != nil {
 		t.Errorf("Error updating scope. Got: %v  Want: nil", err)
 	}
@@ -175,7 +185,7 @@ func TestIAM(t *testing.T) {
 		t.Errorf("Error deletting scope. Got: %v  Want: nil", err)
 	}
 
-	err = client.IAM.ClientDelete("corbel-go-test-domain", sourceClient.ID)
+	err = client.IAM.ClientDelete("corbel-go-test-domain", extractID(location))
 	if err != nil {
 		t.Errorf("Error deletting client. Got: %v  Want: nil", err)
 	}
@@ -185,4 +195,11 @@ func TestIAM(t *testing.T) {
 		t.Errorf("Error deletting domain. Got: %v  Want: nil", err)
 	}
 
+}
+
+func extractID(location string) string {
+	var locationSplit []string
+
+	locationSplit = strings.Split(location, "/")
+	return locationSplit[len(locationSplit)-1]
 }

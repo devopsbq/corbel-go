@@ -18,7 +18,7 @@ type RelationData struct {
 // AddRelation adds the required relation to the resource in the collection
 // with the _related_ resource. Additionally arbitrary information can be passed
 // to as relation data or nil.
-func (r *ResourcesService) AddRelation(collectionName, resourceID, relationName, relatedCollectionName, relatedID string, relationInfo interface{}) error {
+func (r *ResourcesService) AddRelation(collectionName, resourceID, relationName, relatedCollectionName, relatedID string, relationInfo interface{}) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -29,7 +29,7 @@ func (r *ResourcesService) AddRelation(collectionName, resourceID, relationName,
 }
 
 // MoveRelation sets the required order of the related items on the relationship.
-func (r *ResourcesService) MoveRelation(collectionName, resourceID, relationName, relatedCollectionName, relatedID string, order int) error {
+func (r *ResourcesService) MoveRelation(collectionName, resourceID, relationName, relatedCollectionName, relatedID string, order int) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -56,7 +56,8 @@ func (r *ResourcesService) DeleteRelation(collectionName, resourceID, relationNa
 	)
 
 	req, err = r.client.NewRequest("DELETE", "resources", fmt.Sprintf("/v1.0/resource/%s/%s/%s;r=%s/%s", collectionName, resourceID, relationName, relatedCollectionName, relatedID), nil)
-	return returnErrorHTTPSimple(r.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
+	return err
 }
 
 // DeleteAllRelations deletes all the relations by relationName of the desired resource
@@ -67,7 +68,8 @@ func (r *ResourcesService) DeleteAllRelations(collectionName, resourceID, relati
 	)
 
 	req, err = r.client.NewRequest("DELETE", "resources", fmt.Sprintf("/v1.0/resource/%s/%s/%s", collectionName, resourceID, relationName), nil)
-	return returnErrorHTTPSimple(r.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
+	return err
 }
 
 // SearchRelation returns an instance to the Search Builder

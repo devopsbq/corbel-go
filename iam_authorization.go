@@ -62,7 +62,7 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
 	}
 	req.Header.Add("User-Agent", i.client.UserAgent)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	err = returnErrorHTTPInterface(i.client, req, err, &iamResponse, 200)
+	_, err = returnErrorHTTPInterface(i.client, req, err, &iamResponse, 200)
 	if err != nil {
 		return err
 	}

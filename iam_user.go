@@ -24,7 +24,7 @@ type IAMUser struct {
 }
 
 // UserAdd adds an IAMUser defined struct to the domain of the client
-func (i *IAMService) UserAdd(user *IAMUser) error {
+func (i *IAMService) UserAdd(user *IAMUser) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -42,7 +42,8 @@ func (i *IAMService) UserExists(username string) bool {
 	)
 
 	req, err = i.client.NewRequest("HEAD", "iam", fmt.Sprintf("/v1.0/username/%s", username), nil)
-	if returnErrorHTTPSimple(i.client, req, err, 200) != nil {
+	_, err = returnErrorHTTPSimple(i.client, req, err, 200)
+	if err != nil {
 		return false
 	}
 	return true
@@ -56,7 +57,8 @@ func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 	)
 
 	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/user/%s", id), user)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // UserGet gets the desired IAMUuser from the domain by id
@@ -67,7 +69,8 @@ func (i *IAMService) UserGet(id string, user *IAMUser) error {
 	)
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
-	return returnErrorHTTPInterface(i.client, req, err, user, 200)
+	_, err = returnErrorHTTPInterface(i.client, req, err, user, 200)
+	return err
 }
 
 // UserGetMe gets the user authenticated by the current token
@@ -83,7 +86,8 @@ func (i *IAMService) UserDelete(id string) error {
 	)
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // UserSearch gets the desired objects in base of a search query

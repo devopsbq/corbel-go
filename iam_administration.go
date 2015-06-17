@@ -68,7 +68,7 @@ type IAMScope struct {
 }
 
 // DomainAdd adds an Domain defined struct to the platform
-func (i *IAMService) DomainAdd(domain *IAMDomain) error {
+func (i *IAMService) DomainAdd(domain *IAMDomain) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -86,7 +86,8 @@ func (i *IAMService) DomainUpdate(id string, domain *IAMDomain) error {
 	)
 
 	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/domain/%s", id), domain)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // DomainGet gets the desired IAMUdomain from the domain by id
@@ -97,7 +98,8 @@ func (i *IAMService) DomainGet(id string, domain *IAMDomain) error {
 	)
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/domain/%s", id), nil)
-	return returnErrorHTTPInterface(i.client, req, err, domain, 200)
+	_, err = returnErrorHTTPInterface(i.client, req, err, domain, 200)
+	return err
 }
 
 // DomainDelete deletes the desired domain from IAM by id
@@ -108,7 +110,8 @@ func (i *IAMService) DomainDelete(id string) error {
 	)
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/domain/%s", id), nil)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // DomainSearch gets the desired objects in base of a search query
@@ -117,7 +120,7 @@ func (i *IAMService) DomainSearch() *Search {
 }
 
 // ClientAdd adds an Client defined struct to the platform
-func (i *IAMService) ClientAdd(client *IAMClient) error {
+func (i *IAMService) ClientAdd(client *IAMClient) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -135,7 +138,8 @@ func (i *IAMService) ClientUpdate(id string, client *IAMClient) error {
 	)
 
 	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/domain/%s/client/%s", client.Domain, id), client)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // ClientGet gets the desired IAMClient
@@ -146,7 +150,8 @@ func (i *IAMService) ClientGet(domainName, id string, client *IAMClient) error {
 	)
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/domain/%s/client/%s", domainName, id), nil)
-	return returnErrorHTTPInterface(i.client, req, err, client, 200)
+	_, err = returnErrorHTTPInterface(i.client, req, err, client, 200)
+	return err
 }
 
 // ClientDelete deletes the desired client from IAM by id
@@ -157,7 +162,8 @@ func (i *IAMService) ClientDelete(domainName, id string) error {
 	)
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/domain/%s/client/%s", domainName, id), nil)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }
 
 // ClientSearch gets the desired objects in base of a search query
@@ -166,7 +172,7 @@ func (i *IAMService) ClientSearch(domainName string) *Search {
 }
 
 // ScopeAdd adds an Scope defined struct to the platform
-func (i *IAMService) ScopeAdd(scope *IAMScope) error {
+func (i *IAMService) ScopeAdd(scope *IAMScope) (string, error) {
 	var (
 		req *http.Request
 		err error
@@ -177,7 +183,7 @@ func (i *IAMService) ScopeAdd(scope *IAMScope) error {
 }
 
 // ScopeUpdate updates an scope by using IAMScope
-func (i *IAMService) ScopeUpdate(scope *IAMScope) error {
+func (i *IAMService) ScopeUpdate(scope *IAMScope) (string, error) {
 	return i.ScopeAdd(scope)
 }
 
@@ -189,7 +195,8 @@ func (i *IAMService) ScopeGet(id string, scope *IAMScope) error {
 	)
 
 	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
-	return returnErrorHTTPInterface(i.client, req, err, scope, 200)
+	_, err = returnErrorHTTPInterface(i.client, req, err, scope, 200)
+	return err
 }
 
 // ScopeDelete deletes the desired scope from IAM by id
@@ -200,5 +207,6 @@ func (i *IAMService) ScopeDelete(id string) error {
 	)
 
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/scope/%s", id), nil)
-	return returnErrorHTTPSimple(i.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
+	return err
 }

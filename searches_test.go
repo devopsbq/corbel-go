@@ -182,12 +182,12 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 		Key4: false,
 	}
 
-	err = client.Resources.AddToCollection("test:GoCollection", &testResource1)
+	_, err = client.Resources.AddToCollection("test:GoCollection", &testResource1)
 	if err != nil {
 		t.Errorf("Error adding to collection. Expected nil, Got: %v", err)
 	}
 
-	err = client.Resources.AddToCollection("test:GoCollection", &testResource2)
+	_, err = client.Resources.AddToCollection("test:GoCollection", &testResource2)
 	if err != nil {
 		t.Errorf("Error adding to collection. Expected nil, Got: %v", err)
 	}

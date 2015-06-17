@@ -37,5 +37,6 @@ func (a *AssetsService) UpgradeToken() error {
 		return err
 	}
 
-	return returnErrorHTTPSimple(a.client, req, err, 204)
+	_, err = returnErrorHTTPSimple(a.client, req, err, 204)
+	return err
 }

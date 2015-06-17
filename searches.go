@@ -44,7 +44,8 @@ func (s *Search) Page(pageNumber int, result interface{}) error {
 		APIPageSize: s.PageSize,
 	}
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	return returnErrorHTTPInterface(s.client, req, err, result, 200)
+	_, err = returnErrorHTTPInterface(s.client, req, err, result, 200)
+	return err
 }
 
 // Count returns the aggregated count of an especific field in the search
@@ -61,7 +62,7 @@ func (s *Search) Count(field string) (int, error) {
 	}
 
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	err = returnErrorHTTPInterface(s.client, req, err, &aggrCount, 200)
+	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrCount, 200)
 	if err != nil {
 		return 0, err
 	}
@@ -89,7 +90,7 @@ func (s *Search) Average(field string) (float64, error) {
 		APIAggregation: fmt.Sprintf("{\"$avg\":\"%s\"}", field),
 	}
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	err = returnErrorHTTPInterface(s.client, req, err, &aggrAvg, 200)
+	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrAvg, 200)
 	if err != nil {
 		return 0, err
 	}
@@ -118,7 +119,7 @@ func (s *Search) Sum(field string) (float64, error) {
 	}
 
 	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	err = returnErrorHTTPInterface(s.client, req, err, &aggrSum, 200)
+	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrSum, 200)
 	if err != nil {
 		return 0, err
 	}

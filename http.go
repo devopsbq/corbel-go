@@ -57,29 +57,29 @@ func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (
 	return c.NewRequestContentType(method, endpoint, urlStr, "application/json", "application/json", body)
 }
 
-func returnErrorHTTPInterface(client *Client, req *http.Request, err error, object interface{}, desiredStatusCode int) error {
+func returnErrorHTTPInterface(client *Client, req *http.Request, err error, object interface{}, desiredStatusCode int) (string, error) {
 	var (
 		res        *http.Response
 		objectByte []byte
 	)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	res, err = client.httpClient.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	defer res.Body.Close()
 	objectByte, err = ioutil.ReadAll(res.Body)
 	if err != nil {
-		return errResponseError
+		return "", errResponseError
 	}
 
 	err = json.Unmarshal(objectByte, &object)
 	if err != nil {
-		return errJSONUnmarshalError
+		return "", errJSONUnmarshalError
 	}
 
 	// fmt.Println(string(objectByte)) // for debug
@@ -87,20 +87,20 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, err error, obje
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
 }
 
-func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desiredStatusCode int) error {
+func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desiredStatusCode int) (string, error) {
 	var (
 		res *http.Response
 	)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	res, err = client.httpClient.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	// defer res.Body.Close()
+	defer res.Body.Close()
 	// objectByte, _ := ioutil.ReadAll(res.Body)
 	// fmt.Println(string(objectByte)) // for debug
 
@@ -109,14 +109,25 @@ func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desired
 
 // returnErrorByHTTPStatusCode returns the http error code or nil if it returns the
 // desired error
-func returnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) error {
+func returnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) (string, error) {
+	var (
+		location       *url.URL
+		locationString string
+	)
+	location, _ = res.Location()
+	if location == nil {
+		locationString = ""
+	} else {
+		locationString = location.String()
+	}
+
 	if res.StatusCode == desiredStatusCode {
-		return nil
+		return locationString, nil
 	}
 	if http.StatusText(res.StatusCode) == "" {
-		return fmt.Errorf("HTTP Error %d", res.StatusCode)
+		return "", fmt.Errorf("HTTP Error %d", res.StatusCode)
 	}
-	return errors.New(http.StatusText(res.StatusCode))
+	return locationString, errors.New(http.StatusText(res.StatusCode))
 }
 
 func addOptions(s string, opt interface{}) (string, error) {

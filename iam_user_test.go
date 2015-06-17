@@ -70,7 +70,7 @@ func TestIAMUser(t *testing.T) {
 		Country:     "Somewhere",
 	}
 
-	err = client.IAM.UserAdd(&anUser)
+	_, err = client.IAM.UserAdd(&anUser)
 	if err != nil {
 		t.Errorf("Error creating user. Got: %v  Want: nil", err)
 	}
