@@ -21,7 +21,7 @@ func init() {
 	allowedJTWSigningMethods = []string{"HS256", "RSA"}
 }
 
-// Client is the struct that manages communication with the Silkroad APIs.
+// Client is the struct that manages communication with the Corbel APIs.
 type Client struct {
 	// client is the HTTP client to communicate with the API.
 	httpClient *http.Client
@@ -33,7 +33,7 @@ type Client struct {
 	// (Optional) The required information is the clientID
 	ClientName string
 
-	// ClientID is the application defined client on Silkroad.
+	// ClientID is the application defined client on Corbel.
 	ClientID string
 
 	// ClientSecret is the application secret hash that match with clientID.
@@ -54,7 +54,7 @@ type Client struct {
 
 	// TokenExpirationTime define the amount of time in seconds that a token must be valid.
 	// It must be lower than 3600 seconds, since is the imposed requisite from the platform.
-	TokenExpirationTime time.Duration
+	TokenExpirationTime uint64
 
 	// UserAgent defines the UserAgent to send in the Headers for every request to the platform.
 	UserAgent string
@@ -94,14 +94,14 @@ func (c *Client) Token() string {
 
 // NewClient returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
-func NewClient(httpClient *http.Client, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime time.Duration) (*Client, error) {
+func NewClient(httpClient *http.Client, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
 	return NewClientForEnvironment(httpClient, "production", clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod, tokenExpirationTime)
 }
 
 // NewClientForEnvironment returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 // If a empty environment is provided, it will use production as environment.
-func NewClientForEnvironment(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime time.Duration) (*Client, error) {
+func NewClientForEnvironment(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
 
 	var thisClient *Client
 
@@ -142,7 +142,7 @@ func NewClientForEnvironment(httpClient *http.Client, environment, clientID, cli
 		ClientDomain:           clientDomain,
 		ClientScopes:           clientScopes,
 		ClientJWTSigningMethod: clientJWTSigningMethod,
-		TokenExpirationTime:    tokenExpirationTime,
+		TokenExpirationTime:    tokenExpirationTime * 1000,
 		UserAgent:              userAgent,
 	}
 

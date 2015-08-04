@@ -29,12 +29,15 @@ func (i *IAMService) OauthToken() error {
 func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
 	var (
 		iamResponse iamOauthTokenResponse
+		duration    time.Duration
 	)
 	signingMethod := jwt.GetSigningMethod(i.client.ClientJWTSigningMethod)
 	token := jwt.New(signingMethod)
 	// Required JWT Claims for SR
 	token.Claims["aud"] = "http://iam.bqws.io"
-	token.Claims["exp"] = time.Now().Add(time.Second * i.client.TokenExpirationTime).Unix()
+	// convert to time.Duration
+	duration = time.Duration(i.client.TokenExpirationTime) * time.Millisecond
+	token.Claims["exp"] = time.Now().Add(duration).Unix()
 	token.Claims["iss"] = i.client.ClientID
 	token.Claims["scope"] = i.client.ClientScopes
 	token.Claims["domain"] = i.client.ClientDomain

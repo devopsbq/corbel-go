@@ -42,8 +42,8 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 	if c.CurrentToken != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
 	}
-	// fmt.Println(u.String())   // for debug
-	// fmt.Println(buf.String()) // for debug
+	// fmt.Println(u.String())                     // for debug
+	// fmt.Println(buf.String())                   // for debug
 	// fmt.Println("CurrentToken", c.CurrentToken) // for debug
 	return req, nil
 }

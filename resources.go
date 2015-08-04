@@ -1,7 +1,7 @@
 package corbel
 
 // ResourcesService handles the interface for retrival resource's representation
-// on Silkroad.
+// on Corbel.
 //
 // Full API info: http://docs.silkroadresources.apiary.io/
 type ResourcesService struct {
