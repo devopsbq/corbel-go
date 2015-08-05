@@ -6,6 +6,7 @@ var (
 	errMissingClientParams        = errors.New("Client: Missing parameters for the Client. client ID or Secret cannot be empty.")
 	errInvalidEnvironment         = errors.New("Client: Environment is not valid.")
 	errInvalidJWTSigningMethod    = errors.New("Client: Invalid JWT Signing Method.")
+	errUserIDEmpty                = errors.New("Client: User ID can't be empty")
 	errInvalidTokenExpirationTime = errors.New("Client: Invalid TokenExpirationTime. Allowed range: 1-3600 seconds.")
 	errHTTPNotAuthorized          = errors.New("HTTP: 401 Not authorized")
 	errHTTPConflict               = errors.New("HTTP: 409 Conflict")
