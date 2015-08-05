@@ -86,7 +86,7 @@ func (c *Client) URLFor(endpoint, uri string) string {
 // it refresh it.
 // TODO: Refresh token
 func (c *Client) Token() string {
-	if c.CurrentTokenExpiresAt < time.Now().Unix() {
+	if c.CurrentTokenExpiresAt > time.Now().Unix() {
 		return c.CurrentToken
 	}
 	return ""
