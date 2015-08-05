@@ -51,6 +51,9 @@ func (i *IAMService) UserExists(username string) bool {
 
 // UserUpdate updates an user by using IAMUser
 func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
+	if id == "" {
+		return errUserIDEmpty
+	}
 	var (
 		req *http.Request
 		err error
@@ -63,6 +66,9 @@ func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 
 // UserGet gets the desired IAMUuser from the domain by id
 func (i *IAMService) UserGet(id string, user *IAMUser) error {
+	if id == "" {
+		return errUserIDEmpty
+	}
 	var (
 		req *http.Request
 		err error
@@ -80,6 +86,9 @@ func (i *IAMService) UserGetMe(user *IAMUser) error {
 
 // UserDelete deletes the desired user from IAM by id
 func (i *IAMService) UserDelete(id string) error {
+	if id == "" {
+		return errUserIDEmpty
+	}
 	var (
 		req *http.Request
 		err error

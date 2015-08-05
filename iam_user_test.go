@@ -100,10 +100,20 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("Error user getted != user created")
 	}
 
+	err = client.IAM.UserGet("", &anUser2)
+	if err != errUserIDEmpty {
+		t.Errorf("Error getting user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
+	}
+
 	anUser2.Country = "Internet"
 	err = client.IAM.UserUpdate(anUser2.ID, &anUser2)
 	if err != nil {
 		t.Errorf("Error updating users. Got: %v  Want: nil", err)
+	}
+
+	err = client.IAM.UserUpdate("", &anUser2)
+	if err != errUserIDEmpty {
+		t.Errorf("Error updating user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
 	}
 
 	anUser3 := IAMUser{}
@@ -154,6 +164,11 @@ func TestIAMUser(t *testing.T) {
 	err = client.IAM.UserDelete(anUser3.ID)
 	if err != nil {
 		t.Errorf("Error deleting users. Got: %v  Want: nil", err)
+	}
+
+	err = client.IAM.UserDelete("")
+	if err != errUserIDEmpty {
+		t.Errorf("Error deleting user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
 	}
 
 }
