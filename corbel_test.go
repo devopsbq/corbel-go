@@ -57,6 +57,10 @@ func TestClientNewClient(t *testing.T) {
 	if got, want := client.CurrentToken, ""; got != want {
 		t.Errorf("NewClient Token is %v, but want %v", got, want)
 	}
+
+	if got, want := client.CurrentToken, client.Token(); got != want {
+		t.Errorf("NewClient Token is %v, but want %v", got, want)
+	}
 }
 
 func TestClientURLFor(t *testing.T) {
