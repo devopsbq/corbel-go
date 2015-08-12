@@ -135,6 +135,16 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("UserExists failed by username. Expect: false, Got: %t", exists)
 	}
 
+	// Find user by username
+	if _, err := client.IAM.UserByUsername("corbel-go"); err != nil {
+		t.Errorf("UserByUsername failed by username. Expect: nil, Got: %t", err)
+	}
+
+	// Find user by username
+	if _, err := client.IAM.UserByUsername("non-corbel-go"); err == nil {
+		t.Errorf("UserByUsername failed by username. Expect: err, Got: %t", err)
+	}
+
 	// Basic Auth
 	err = clientForUser.IAM.OauthTokenBasicAuth(anUser.Username, anUser.Password)
 	if err != nil {

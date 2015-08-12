@@ -103,3 +103,19 @@ func (i *IAMService) UserDelete(id string) error {
 func (i *IAMService) UserSearch() *Search {
 	return NewSearch(i.client, "iam", "/v1.0/user")
 }
+
+// UserByUsername allow to find an user based on its username
+func (i *IAMService) UserByUsername(username string) (*IAMUser, error) {
+	search := i.UserSearch()
+	search.Query.Eq["username"] = username
+
+	var arrUsers []*IAMUser
+	err := search.Page(0, &arrUsers)
+	if err != nil {
+		return nil, err
+	}
+	if len(arrUsers) == 0 {
+		return nil, errUserNotFound
+	}
+	return arrUsers[0], nil
+}
