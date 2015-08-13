@@ -26,7 +26,8 @@ func TestResourcesRelations(t *testing.T) {
 	}
 
 	type ResourceForTest struct {
-		ID   string  `json:"id,omitempty"`
+		*ResourceBasic
+		//ID   string  `json:"id,omitempty"`
 		Key1 string  `json:"key1"`
 		Key2 int     `json:"key2"`
 		Key3 float64 `json:"key3"`
@@ -39,10 +40,11 @@ func TestResourcesRelations(t *testing.T) {
 		arrSearch              []ResourceForTest
 	)
 	test1 := ResourceForTest{
-		Key1: "test string",
-		Key2: 123456,
-		Key3: 1.123456,
-		Key4: true,
+		ResourceBasic: &ResourceBasic{},
+		Key1:          "test string",
+		Key2:          123456,
+		Key3:          1.123456,
+		Key4:          true,
 	}
 
 	_, err = client.Resources.AddToCollection("test:GoTestOrigin", &test1)
@@ -51,10 +53,11 @@ func TestResourcesRelations(t *testing.T) {
 	}
 
 	test2 := ResourceForTest{
-		Key1: "test2",
-		Key2: 123456,
-		Key3: 1.123456,
-		Key4: true,
+		ResourceBasic: &ResourceBasic{},
+		Key1:          "test2",
+		Key2:          123456,
+		Key3:          1.123456,
+		Key4:          true,
 	}
 
 	_, err = client.Resources.AddToCollection("test:GoTestDestination", &test2)
@@ -63,10 +66,11 @@ func TestResourcesRelations(t *testing.T) {
 	}
 
 	test3 := ResourceForTest{
-		Key1: "test3",
-		Key2: 123456,
-		Key3: 1.123456,
-		Key4: true,
+		ResourceBasic: &ResourceBasic{},
+		Key1:          "test3",
+		Key2:          123456,
+		Key3:          1.123456,
+		Key4:          true,
 	}
 
 	_, err = client.Resources.AddToCollection("test:GoTestDestination", &test3)

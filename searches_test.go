@@ -159,7 +159,8 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 		1000)
 
 	type ResourceForTest struct {
-		ID   string  `json:"id, omitempty"`
+		*ResourceBasic
+		//ID   string  `json:"id,omitempty"`
 		Key1 string  `json:"key1,omitempty"`
 		Key2 int     `json:"key2,omitempty"`
 		Key3 float64 `json:"key3,omitempty"`
@@ -169,17 +170,19 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 	_ = client.IAM.OauthToken()
 
 	testResource1 := ResourceForTest{
-		Key1: "test1",
-		Key2: 123456,
-		Key3: 1.23,
-		Key4: true,
+		ResourceBasic: &ResourceBasic{},
+		Key1:          "test1",
+		Key2:          123456,
+		Key3:          1.23,
+		Key4:          true,
 	}
 
 	testResource2 := ResourceForTest{
-		Key1: "test2",
-		Key2: 123456,
-		Key3: 1.25,
-		Key4: false,
+		ResourceBasic: &ResourceBasic{},
+		Key1:          "test2",
+		Key2:          123456,
+		Key3:          1.25,
+		Key4:          false,
 	}
 
 	_, err = client.Resources.AddToCollection("test:GoCollection", &testResource1)
