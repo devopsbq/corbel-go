@@ -71,3 +71,12 @@ func (r *ResourcesService) DeleteFromCollection(collectionName, id string) error
 	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
 	return err
 }
+
+// UpdateResourceACL updates the acl of the associated resource. ACL entries will be added if they were not previously
+// there or modified otherwise. Any entries previously added but not passed will be removed.
+func (r *ResourcesService) UpdateResourceACL(collectionName, id string, acl map[string]string) error {
+	req, err := r.client.NewRequest("PUT", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), acl)
+	req.Header.Set("Accept", "application/corbel.acl+json")
+	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
+	return err
+}

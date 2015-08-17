@@ -1,6 +1,9 @@
 package corbel
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestResourcesAddToCollection(t *testing.T) {
 
@@ -179,4 +182,78 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		t.Errorf("Failed to DeleteFromCollection to a struct. Got: %v  Want: nil", err)
 	}
 
+	type ResourceWithAcl struct {
+		ID   string            `json:"id,omitempty"`
+		Name string            `json:"name,omitempty"`
+		ACL  map[string]string `json:"_acl,omitempty"`
+	}
+
+	resAcl := &ResourceWithAcl{
+		Name: "Prueba ACL",
+	}
+
+	id, err := client.Resources.AddToCollection("test:GoTestResource", resAcl)
+	if err != nil {
+		t.Errorf("Failed to AddFromCollection to a struct. Got: %v  Want: nil", err)
+	}
+	s := strings.Split(id, "/")
+	resAcl.ID = s[len(s)-1]
+	resAcl.ACL = make(map[string]string)
+
+	resAcl.ACL["ALL"] = "READ"
+	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
+	}
+	err = client.Resources.GetFromCollection("test:GoTestResource", resAcl.ID, resAcl)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
+	}
+	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"] != "READ" {
+		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 1/READ", len(resAcl.ACL), resAcl.ACL["ALL"])
+	}
+
+	resAcl.ACL["user1"] = "WRITE"
+	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
+	}
+	err = client.Resources.GetFromCollection("test:GoTestResource", resAcl.ID, resAcl)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
+	}
+	if len(resAcl.ACL) != 2 {
+		t.Errorf("Failed to UpdateResourceACL . Got: %d  Want: 2", len(resAcl.ACL))
+	}
+
+	resAcl.ACL["user1"] = "READ"
+	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
+	}
+	err = client.Resources.GetFromCollection("test:GoTestResource", resAcl.ID, resAcl)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
+	}
+	if len(resAcl.ACL) != 2 || resAcl.ACL["user1"] != "READ" {
+		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 2/READ", len(resAcl.ACL), resAcl.ACL["user1"])
+	}
+
+	delete(resAcl.ACL, "ALL")
+	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
+	}
+	err = client.Resources.GetFromCollection("test:GoTestResource", resAcl.ID, resAcl)
+	if err != nil {
+		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
+	}
+	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"] != "" {
+		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 1/", len(resAcl.ACL), resAcl.ACL["ALL"])
+	}
+
+	err = client.Resources.DeleteFromCollection("test:GoTestResource", resAcl.ID)
+	if err != nil {
+		t.Errorf("Failed to DeleteFromCollection to a struct. Got: %v  Want: nil", err)
+	}
 }
