@@ -57,7 +57,7 @@ func TestClientNewRequest(t *testing.T) {
 	if got, want := iamVersion.BuildArtifactID, "iam"; got != want {
 		t.Errorf("/version unmarshaled json build.artifactId is %v, but want %v", got, want)
 	}
-	if got, want := iamVersion.BuildGroupID, "com.bq.oss.corbel"; got != want {
+	if got, want := iamVersion.BuildGroupID, "io.corbel"; got != want {
 		t.Errorf("/version unmarshaled json build.groupId is %v, but want %v", got, want)
 	}
 }
