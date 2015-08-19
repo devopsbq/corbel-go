@@ -22,8 +22,8 @@ func (r *ResourcesService) AddToCollection(collectionName string, resource Resou
 
 // UpdateInCollection updates the required struct formated as json to the desired collection
 // resource must have exported variables and optionally its representation as JSON.
-func (r *ResourcesService) UpdateInCollection(collectionName, id string, resource interface{}) error {
-	// TODO: replace for Resource
+func (r *ResourcesService) UpdateInCollection(collectionName, id string, resource Resource) error {
+	// IDEA: maybe we could remove id and collectionName from the firm ad use resource values (we will need to check that value exists)
 	req, err := r.client.NewRequest("PUT", "resources", fmt.Sprintf("/v1.0/resource/%s/%s", collectionName, id), resource)
 	_, err = returnErrorHTTPSimple(r.client, req, err, 204)
 	return err
@@ -44,7 +44,7 @@ func (r *ResourcesService) GetFromCollection(collectionName, id string, resource
 }
 
 // GetFromRelationDefinition gets the desired object from the collection by id
-func (r *ResourcesService) GetFromRelationDefinition(id string, resource interface{}) error {
+func (r *ResourcesService) GetFromRelationDefinition(id string, resource Resource) error {
 	req, err := r.client.NewRequest("GET", "resources", fmt.Sprintf("/v1.0/resource/%s", id), nil)
 	_, err = returnErrorHTTPInterface(r.client, req, err, resource, 200)
 	return err
