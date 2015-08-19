@@ -156,15 +156,16 @@ func NewSearch(client *Client, endpoint, baseURL string) *Search {
 
 // Query is the struct that contains the especification of a search
 type apiquery struct {
-	Eq   map[string]string   `json:"$eq,omitempty"`
-	Gt   map[string]int      `json:"$gt,omitempty"`
-	Gte  map[string]int      `json:"$gte,omitempty"`
-	Lt   map[string]int      `json:"$lt,omitempty"`
-	Lte  map[string]int      `json:"$lte,omitempty"`
-	Ne   map[string]string   `json:"$ne,omitempty"`
-	In   map[string][]string `json:"$in,omitempty"`
-	All  map[string][]string `json:"$all,omitempty"`
-	Like map[string]string   `json:"$like,omitempty"`
+	Eq     map[string]string   `json:"$eq,omitempty"`
+	Gt     map[string]int      `json:"$gt,omitempty"`
+	Gte    map[string]int      `json:"$gte,omitempty"`
+	Lt     map[string]int      `json:"$lt,omitempty"`
+	Lte    map[string]int      `json:"$lte,omitempty"`
+	Ne     map[string]string   `json:"$ne,omitempty"`
+	In     map[string][]string `json:"$in,omitempty"`
+	All    map[string][]string `json:"$all,omitempty"`
+	Like   map[string]string   `json:"$like,omitempty"`
+	Exists map[string]bool     `json:"$exists,omitempty"`
 }
 
 // QueryString returns the query string to append to the url we are searching for.
@@ -180,15 +181,16 @@ func (q *apiquery) string() string {
 // NewQuery returns a New search struct
 func newQuery() *apiquery {
 	return &apiquery{
-		Eq:   make(map[string]string),
-		Gt:   make(map[string]int),
-		Gte:  make(map[string]int),
-		Lt:   make(map[string]int),
-		Lte:  make(map[string]int),
-		Ne:   make(map[string]string),
-		In:   make(map[string][]string),
-		All:  make(map[string][]string),
-		Like: make(map[string]string),
+		Eq:     make(map[string]string),
+		Gt:     make(map[string]int),
+		Gte:    make(map[string]int),
+		Lt:     make(map[string]int),
+		Lte:    make(map[string]int),
+		Ne:     make(map[string]string),
+		In:     make(map[string][]string),
+		All:    make(map[string][]string),
+		Like:   make(map[string]string),
+		Exists: make(map[string]bool),
 	}
 }
 
