@@ -64,6 +64,10 @@ func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 	return err
 }
 
+func (i *IAMService) UserUpdateMe(user *IAMUser) error {
+	return i.UserUpdate("me", user)
+}
+
 // UserGet gets the desired IAMUuser from the domain by id
 func (i *IAMService) UserGet(id string, user *IAMUser) error {
 	if id == "" {
@@ -97,6 +101,10 @@ func (i *IAMService) UserDelete(id string) error {
 	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
 	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
 	return err
+}
+
+func (i *IAMService) UserDeleteMe() error {
+	return i.UserDelete("me")
 }
 
 // UserSearch gets the desired objects in base of a search query

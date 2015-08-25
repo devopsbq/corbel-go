@@ -1,6 +1,7 @@
 package corbel
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -171,7 +172,15 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("GetMe returned a different user than validated.")
 	}
 
-	err = client.IAM.UserDelete(anUser3.ID)
+	fmt.Println(meUser.ID, anUser3.ID)
+
+	meUser.Country = "Internetv2"
+	err = clientForUser.IAM.UserUpdateMe(&meUser)
+	if err != nil {
+		t.Errorf("Error updating users. Got: %v  Want: nil", err)
+	}
+
+	err = clientForUser.IAM.UserDeleteMe()
 	if err != nil {
 		t.Errorf("Error deleting users. Got: %v  Want: nil", err)
 	}
@@ -180,5 +189,4 @@ func TestIAMUser(t *testing.T) {
 	if err != errUserIDEmpty {
 		t.Errorf("Error deleting user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
 	}
-
 }
