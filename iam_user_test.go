@@ -1,7 +1,7 @@
 package corbel
 
 import (
-	"fmt"
+	"strings"
 	"testing"
 	"time"
 )
@@ -102,8 +102,8 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	err = client.IAM.UserGet("", &anUser2)
-	if err != errUserIDEmpty {
-		t.Errorf("Error getting user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
+	if err != errIdentifierEmpty {
+		t.Errorf("Error getting user. If ID is empty should return %v, instead came %v", errIdentifierEmpty, err)
 	}
 
 	anUser2.Country = "Internet"
@@ -113,8 +113,8 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	err = client.IAM.UserUpdate("", &anUser2)
-	if err != errUserIDEmpty {
-		t.Errorf("Error updating user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
+	if err != errIdentifierEmpty {
+		t.Errorf("Error updating user. If ID is empty should return %v, instead came %v", errIdentifierEmpty, err)
 	}
 
 	anUser3 := IAMUser{}
@@ -172,7 +172,21 @@ func TestIAMUser(t *testing.T) {
 		t.Errorf("GetMe returned a different user than validated.")
 	}
 
-	fmt.Println(meUser.ID, anUser3.ID)
+	g := &IAMGroup{Name: "Prueba"}
+	loc, err := client.IAM.GroupAdd(g)
+	if err != nil {
+		t.Errorf("Error creating group. Got: %v  Want: nil", err)
+	}
+	id := strings.Split(loc, "/")
+	err = client.IAM.UserAddGroups(meUser.ID, []string{id[len(id)-1]})
+	if err != nil {
+		t.Errorf("Error adding user to group. Got: %v  Want: nil", err)
+	}
+	err = client.IAM.UserDeleteGroup(meUser.ID, id[len(id)-1])
+	if err != nil {
+		t.Errorf("Error removing group to user. Got: %v  Want: nil", err)
+	}
+	err = client.IAM.GroupDelete(id[len(id)-1])
 
 	meUser.Country = "Internetv2"
 	err = clientForUser.IAM.UserUpdateMe(&meUser)
@@ -186,7 +200,7 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	err = client.IAM.UserDelete("")
-	if err != errUserIDEmpty {
-		t.Errorf("Error deleting user. If ID is empty should return %v, instead came %v", errUserIDEmpty, err)
+	if err != errIdentifierEmpty {
+		t.Errorf("Error deleting user. If ID is empty should return %v, instead came %v", errIdentifierEmpty, err)
 	}
 }

@@ -8,6 +8,9 @@ type ResourcesService struct {
 	client *Client
 }
 
+//
+type ACL map[string]string
+
 // Resource te
 type Resource struct {
 	ACL map[string]string

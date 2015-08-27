@@ -21,16 +21,12 @@ type IAMUser struct {
 	Country     string                 `json:"country,omitempty"`
 	CreatedDate int                    `json:"createdDate,omitempty"`
 	CreatedBy   string                 `json:"createdBy,omitempty"`
+	Groups      []string               `json:"groups,omitempty"`
 }
 
 // UserAdd adds an IAMUser defined struct to the domain of the client
 func (i *IAMService) UserAdd(user *IAMUser) (string, error) {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("POST", "iam", "/v1.0/user", user)
+	req, err := i.client.NewRequest("POST", "iam", "/v1.0/user", user)
 	return returnErrorHTTPSimple(i.client, req, err, 201)
 }
 
@@ -52,18 +48,14 @@ func (i *IAMService) UserExists(username string) bool {
 // UserUpdate updates an user by using IAMUser
 func (i *IAMService) UserUpdate(id string, user *IAMUser) error {
 	if id == "" {
-		return errUserIDEmpty
+		return errIdentifierEmpty
 	}
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/user/%s", id), user)
+	req, err := i.client.NewRequest("PUT", "iam", fmt.Sprintf("/v1.0/user/%s", id), user)
 	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
 	return err
 }
 
+//UserUpdateMe updates the user authenticated by the current token
 func (i *IAMService) UserUpdateMe(user *IAMUser) error {
 	return i.UserUpdate("me", user)
 }
@@ -71,14 +63,9 @@ func (i *IAMService) UserUpdateMe(user *IAMUser) error {
 // UserGet gets the desired IAMUuser from the domain by id
 func (i *IAMService) UserGet(id string, user *IAMUser) error {
 	if id == "" {
-		return errUserIDEmpty
+		return errIdentifierEmpty
 	}
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
+	req, err := i.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
 	_, err = returnErrorHTTPInterface(i.client, req, err, user, 200)
 	return err
 }
@@ -91,18 +78,14 @@ func (i *IAMService) UserGetMe(user *IAMUser) error {
 // UserDelete deletes the desired user from IAM by id
 func (i *IAMService) UserDelete(id string) error {
 	if id == "" {
-		return errUserIDEmpty
+		return errIdentifierEmpty
 	}
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
+	req, err := i.client.NewRequest("DELETE", "iam", fmt.Sprintf("/v1.0/user/%s", id), nil)
 	_, err = returnErrorHTTPSimple(i.client, req, err, 204)
 	return err
 }
 
+//UserDeleteMe deletes the user authenticated by the current token
 func (i *IAMService) UserDeleteMe() error {
 	return i.UserDelete("me")
 }

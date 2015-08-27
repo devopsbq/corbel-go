@@ -3,7 +3,6 @@ package corbel
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -127,7 +126,7 @@ func returnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) (str
 	if http.StatusText(res.StatusCode) == "" {
 		return "", fmt.Errorf("HTTP Error %d", res.StatusCode)
 	}
-	return locationString, errors.New(http.StatusText(res.StatusCode))
+	return locationString, fmt.Errorf("%d %s", res.StatusCode, http.StatusText(res.StatusCode))
 }
 
 func addOptions(s string, opt interface{}) (string, error) {

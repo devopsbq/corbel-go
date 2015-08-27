@@ -86,10 +86,10 @@ func (c *Client) URLFor(endpoint, uri string) string {
 // it refresh it.
 // TODO: Refresh token
 func (c *Client) Token() string {
-	if c.CurrentTokenExpiresAt > time.Now().Unix() {
-		return c.CurrentToken
+	if c.CurrentTokenExpiresAt <= time.Now().Unix()*1000 {
+		return ""
 	}
-	return ""
+	return c.CurrentToken
 }
 
 // NewClient returns a new Corbel API client.
