@@ -3,6 +3,7 @@ package corbel
 import (
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestIAMOauthToken(t *testing.T) {
@@ -30,6 +31,39 @@ func TestIAMOauthToken(t *testing.T) {
 	if got, want := strings.Count(client.CurrentToken, "."), 2; got != want {
 		t.Errorf("client.CurrentToken must return a token with 2 dots. Got: %v  Want: %v", got, want)
 	}
+}
+
+func TestIAMRefreshToken(t *testing.T) {
+	var (
+		client *Client
+		err    error
+	)
+
+	client, err = NewClientForEnvironment(
+		nil,
+		"qa",
+		"a9fb0e79",
+		"test-client",
+		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
+		"",
+		"silkroad-qa",
+		"HS256",
+		1)
+
+	err = client.IAM.OauthToken()
+	if got := err; got != nil {
+		t.Errorf("GetToken must not fail. Got: %v  Want: nil", got)
+	}
+
+	currentToken := client.CurrentToken
+
+	// sleep for 2 seconds to ensure that must be refreshed on the next query
+	time.Sleep(2 * time.Second)
+
+	if client.Token() == currentToken {
+		t.Error("client.Token did not updated its token after expiration")
+	}
+
 }
 
 func TestIAMOauthTokenUpgrade(t *testing.T) {

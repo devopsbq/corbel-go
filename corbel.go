@@ -86,8 +86,17 @@ func (c *Client) URLFor(endpoint, uri string) string {
 // it refresh it.
 // TODO: Refresh token
 func (c *Client) Token() string {
+	// if CurrentToken == "" then return it as is
+	if c.CurrentToken == "" {
+		return c.CurrentToken
+	}
+	// if we have CurrentToken check if already expired
 	if c.CurrentTokenExpiresAt <= time.Now().Unix()*1000 {
-		return ""
+		if c.CurrentRefreshToken != "" {
+			_ = c.IAM.RefreshToken()
+		} else {
+			_ = c.IAM.OauthToken()
+		}
 	}
 	return c.CurrentToken
 }

@@ -153,7 +153,13 @@ func TestIAMUser(t *testing.T) {
 	}
 
 	if got, want := clientForUser.CurrentToken, ""; got == want {
-		t.Errorf("OauthTokenBasicAuth must  fill CurrentToken if user/password does not exists.")
+		t.Errorf("OauthTokenBasicAuth must fill CurrentToken if user/password exists.")
+	}
+
+	// RefreshToken
+	err = clientForUser.IAM.RefreshToken()
+	if got := err; got != nil {
+		t.Errorf("RefreshToken must not fail. Got: %v  Want: nil", got)
 	}
 
 	err = clientForUser.Assets.UpgradeToken()

@@ -39,7 +39,7 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 	req.Header.Add("Accept", headerAccept)
 	req.Header.Add("User-Agent", c.UserAgent)
 	if c.CurrentToken != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.CurrentToken))
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.Token()))
 	}
 	// fmt.Println(u.String())                     // for debug
 	// fmt.Println(buf.String())                   // for debug
