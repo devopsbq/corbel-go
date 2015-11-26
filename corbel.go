@@ -76,6 +76,10 @@ type Client struct {
 
 // URLFor returns the formated url of the API using the actual url scheme
 func (c *Client) URLFor(endpoint, uri string) string {
+	// if endpoint == "resources" {
+	// 	return fmt.Sprintf("http://172.16.30.48:8080%s", uri)
+	// }
+	//return fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
 	if c.Environment == "production" {
 		return fmt.Sprintf("https://%s.bqws.io%s", endpoint, uri)
 	}

@@ -15,7 +15,7 @@ func TestResourcesAddToCollection(t *testing.T) {
 
 	client, err = NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
@@ -71,7 +71,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 
 	client, err = NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",

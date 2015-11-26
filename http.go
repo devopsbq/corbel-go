@@ -100,7 +100,7 @@ func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desired
 	}
 
 	defer res.Body.Close()
-	// objectByte, _ := ioutil.ReadAll(res.Body)
+	// objectByte, _ := ioutil.ReadAll(res.Body) // for debug
 	// fmt.Println(string(objectByte)) // for debug
 
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
