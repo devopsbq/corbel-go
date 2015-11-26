@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/fernandezvara/corbel-go.svg?branch=master)](https://travis-ci.org/fernandezvara/corbel-go)
-[![GoDoc](https://godoc.org/github.com/fernandezvara/go-silkroad?status.png)](https://godoc.org/github.com/fernandezvara/corbel-go)
-[![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/fernandezvara/corbel-go)
-[![Coverage Status](https://coveralls.io/repos/fernandezvara/corbel-go/badge.svg?branch=master)](https://coveralls.io/r/fernandezvara/corbel-go?branch=master)
+[![Build Status](https://travis-ci.org/devopsbq/corbel-go.svg?branch=master)](https://travis-ci.org/devopsbq/corbel-go)
+[![GoDoc](https://godoc.org/github.com/devopsbq/corbel-go?status.png)](https://godoc.org/github.com/devopsbq/corbel-go)
+[![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/devopsbq/corbel-go)
+[![Coverage Status](https://coveralls.io/repos/devopsbq/corbel-go/badge.svg?branch=master)](https://coveralls.io/r/devopsbq/corbel-go?branch=master)
 
 # **Corbel-Go**
 
