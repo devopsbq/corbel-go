@@ -32,8 +32,6 @@ func (a *AssetsService) UpgradeToken() error {
 		return err
 	}
 
-	fmt.Println(location)
-
 	req, err = a.client.NewRequest("GET", "iam", fmt.Sprintf("/v1.0/oauth/token/upgrade?%s", location.RawQuery), nil)
 	if err != nil {
 		return err
