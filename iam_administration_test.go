@@ -30,7 +30,7 @@ func TestIAM(t *testing.T) {
 
 	client, err = NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		os.Getenv("IAM_CLIENTID"),
 		"iam-client",
 		os.Getenv("IAM_CLIENTSECRET"),

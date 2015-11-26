@@ -6,8 +6,7 @@ import "fmt"
 type IAMGroup struct {
 	ID     string   `json:"id,omitempty"`
 	Name   string   `json:"name"`
-	Domain string   `json:"domain,omitempty"`
-	Scopes []string `json:"scopes,omitempty"`
+	Scopes []string `json:"scopes"` // must be omitempty
 }
 
 //UserAddGroups add groups to user's list of groups

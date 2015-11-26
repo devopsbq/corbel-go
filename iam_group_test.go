@@ -8,7 +8,7 @@ import (
 func TestIAMGroup(t *testing.T) {
 	client, err := NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		"22b0e55f",
 		"test-client-full",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
@@ -26,7 +26,7 @@ func TestIAMGroup(t *testing.T) {
 		t.Errorf("Error getting token. Got: %v  Want: nil", err)
 	}
 
-	g := &IAMGroup{Name: "Prueba"}
+	g := &IAMGroup{Name: "Prueba", Scopes: []string{}}
 	loc, err := client.IAM.GroupAdd(g)
 	if err != nil {
 		t.Errorf("Error creating group. Got: %v  Want: nil", err)
@@ -38,10 +38,10 @@ func TestIAMGroup(t *testing.T) {
 	if err != nil || getg.Name != "Prueba" {
 		t.Errorf("Error retrieving group. Got: %v  Want: nil", err)
 	}
-	if err = client.IAM.GroupSetScopes(id[len(id)-1], []string{"scope:prueba"}); err != nil {
+	if err = client.IAM.GroupSetScopes(id[len(id)-1], []string{"silkroad:comp:base"}); err != nil {
 		t.Errorf("Error adding scope to group. Got: %v  Want: nil", err)
 	}
-	if err = client.IAM.GroupDeleteScope(id[len(id)-1], "scope:prueba"); err != nil {
+	if err = client.IAM.GroupDeleteScope(id[len(id)-1], "silkroad:comp:base"); err != nil {
 		t.Errorf("Error adding scope to group. Got: %v  Want: nil", err)
 	}
 	if err = client.IAM.GroupDelete(id[len(id)-1]); err != nil {

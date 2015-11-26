@@ -91,7 +91,7 @@ func TestSortsQueryStrings(t *testing.T) {
 func TestSearchQueryString(t *testing.T) {
 	client, _ := NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
@@ -149,7 +149,7 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 
 	client, _ := NewClientForEnvironment(
 		nil,
-		"qa",
+		"int",
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
