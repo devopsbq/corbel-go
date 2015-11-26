@@ -76,3 +76,10 @@ func (r *ResourcesService) DeleteAllRelations(collectionName, resourceID, relati
 func (r *ResourcesService) SearchRelation(collectionName, resourceID, relationName string) *Search {
 	return NewSearch(r.client, "resources", fmt.Sprintf("/v1.0/resource/%s/%s/%s", collectionName, resourceID, relationName))
 }
+
+// SearchSpecificRelation returns a relation between two objects belonging to the relation
+func (r *ResourcesService) SearchSpecificRelation(firstCollection, firstCollectionID, relationName, secondCollection, secondCollectionID string) *Search {
+	search := r.SearchRelation(firstCollection, firstCollectionID, relationName)
+	search.Query.Eq[secondCollection] = secondCollectionID
+	return search
+}
