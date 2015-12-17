@@ -16,7 +16,6 @@ var (
 // init defines constants that will be used later
 func init() {
 	userAgent = fmt.Sprintf("corbel-go/%s", Version)
-	allowedEnvironments = []string{"production", "staging", "current", "next", "qa", "int", "demo"}
 	allowedEndpoints = []string{"iam", "oauth", "assets", "resources"}
 	allowedJTWSigningMethods = []string{"HS256", "RSA"}
 }
@@ -26,8 +25,8 @@ type Client struct {
 	// client is the HTTP client to communicate with the API.
 	httpClient *http.Client
 
-	// Environment is used to define the target environment to speak with.
-	Environment string
+	// Endpoint is a structure that stores the uri for each resource
+	Endpoints map[string]string
 
 	// ClientName is the name that match the clientID
 	// (Optional) The required information is the clientID
@@ -76,14 +75,7 @@ type Client struct {
 
 // URLFor returns the formated url of the API using the actual url scheme
 func (c *Client) URLFor(endpoint, uri string) string {
-	// if endpoint == "resources" {
-	// 	return fmt.Sprintf("http://172.16.30.48:8080%s", uri)
-	// }
-	//return fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
-	if c.Environment == "production" {
-		return fmt.Sprintf("https://%s.bqws.io%s", endpoint, uri)
-	}
-	return fmt.Sprintf("https://%s-%s.bqws.io%s", endpoint, c.Environment, uri)
+	return fmt.Sprintf("%s%s", c.Endpoints[endpoint], uri)
 }
 
 // Token returns the token to use as bearer. If the token has already expired
@@ -108,13 +100,14 @@ func (c *Client) Token() string {
 // NewClient returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 func NewClient(httpClient *http.Client, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
-	return NewClientForEnvironment(httpClient, "production", clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod, tokenExpirationTime)
+	var endpoints = map[string]string{"iam": "https://iam.bqws.io", "resources": "https://resources.bqws.io"}
+	return NewClientForEnvironment(httpClient, endpoints, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod, tokenExpirationTime)
 }
 
 // NewClientForEnvironment returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
-// If a empty environment is provided, it will use production as environment.
-func NewClientForEnvironment(httpClient *http.Client, environment, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
+// If a empty endpoint map is provided, it will use production endpoints.
+func NewClientForEnvironment(httpClient *http.Client, endpoints map[string]string, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
 
 	var thisClient *Client
 
@@ -122,13 +115,8 @@ func NewClientForEnvironment(httpClient *http.Client, environment, clientID, cli
 		httpClient = http.DefaultClient
 	}
 
-	if environment == "" {
-		environment = "production"
-	}
-
-	// allowedEnvironments?
-	if stringInSlice(allowedEnvironments, environment) == false {
-		return nil, errInvalidEnvironment
+	if len(endpoints) <= 0 {
+		endpoints = map[string]string{"iam": "https://iam.bqws.io", "resources": "https://resources.bqws.io"}
 	}
 
 	// allowedJTWSigningMethods?
@@ -148,7 +136,7 @@ func NewClientForEnvironment(httpClient *http.Client, environment, clientID, cli
 
 	thisClient = &Client{
 		httpClient:             httpClient,
-		Environment:            environment,
+		Endpoints:              endpoints,
 		ClientName:             clientName,
 		ClientID:               clientID,
 		ClientSecret:           clientSecret,
