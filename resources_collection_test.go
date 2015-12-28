@@ -1,8 +1,6 @@
 package corbel
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -205,9 +203,6 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	resAcl.ACL = make(map[string]UserACL)
 
 	resAcl.ACL["ALL"] = UserACL{Permission: "READ", Properties: make(map[string]interface{})}
-
-	b, err := json.Marshal(resAcl.ACL)
-	fmt.Println(string(b))
 	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
