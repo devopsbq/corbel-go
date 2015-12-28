@@ -9,16 +9,17 @@ func TestResourcesRelations(t *testing.T) {
 		search *Search
 	)
 
-	client, err = NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	err = client.IAM.OauthToken()
 	if err != nil {

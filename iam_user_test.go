@@ -14,31 +14,32 @@ func TestIAMUser(t *testing.T) {
 		err           error
 	)
 
-	client, err = NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		"22b0e55f",
 		"test-client-full",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	if err != nil {
 		t.Errorf("Error instancing client. Got: %v  Want: nil", err)
 	}
 
-	clientForUser, err = NewClientForEnvironment(
+	clientForUser, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	if err != nil {
 		t.Errorf("Error instancing clientForUser. Got: %v  Want: nil", err)
@@ -87,11 +88,11 @@ func TestIAMUser(t *testing.T) {
 	}
 	if got, want := len(arrUsers), 1; got != want {
 		t.Errorf("Error on search. Got: %v. Expect %v user.", got, want)
+	} else {
+		if arrUsers[0].Username != anUser.Username {
+			t.Errorf("Error user found != user created")
+		}
 	}
-	if arrUsers[0].Username != anUser.Username {
-		t.Errorf("Error user found != user created")
-	}
-
 	anUser2 := IAMUser{}
 	err = client.IAM.UserGet(arrUsers[0].ID, &anUser2)
 	if err != nil {
