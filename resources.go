@@ -8,8 +8,11 @@ type ResourcesService struct {
 	client *Client
 }
 
-//
-type ACL map[string]string
+// UserACL defines the content of an ACL for a user
+type UserACL struct {
+	Permission string                 `json:"permission"`
+	Properties map[string]interface{} `json:"properties"`
+}
 
 // Resource te
 type Resource struct {

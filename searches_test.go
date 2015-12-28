@@ -89,16 +89,17 @@ func TestSortsQueryStrings(t *testing.T) {
 }
 
 func TestSearchQueryString(t *testing.T) {
-	client, _ := NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, _ := NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	search := NewSearch(client, "resources", "/v1.0/resource/test:Collection")
 
@@ -147,9 +148,10 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 		sum   float64
 	)
 
-	client, _ := NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, _ := NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",

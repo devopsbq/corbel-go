@@ -28,9 +28,10 @@ func TestIAM(t *testing.T) {
 		location     string
 	)
 
-	client, err = NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		os.Getenv("IAM_CLIENTID"),
 		"iam-client",
 		os.Getenv("IAM_CLIENTSECRET"),

@@ -13,16 +13,17 @@ func TestResourcesAddToCollection(t *testing.T) {
 		err    error
 	)
 
-	client, err = NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	err = client.IAM.OauthToken()
 	if err != nil {
@@ -69,16 +70,17 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		search *Search
 	)
 
-	client, err = NewClientForEnvironment(
+	endpoints := map[string]string{"iam": "https://iam-int.bqws.io", "resources": "https://resources-int.bqws.io"}
+	client, err = NewClient(
 		nil,
-		"int",
+		endpoints,
 		"a9fb0e79",
 		"test-client",
 		"90f6ed907ce7e2426e51aa52a18470195f4eb04725beb41569db3f796a018dbd",
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		300)
 
 	err = client.IAM.OauthToken()
 	if err != nil {
@@ -183,9 +185,9 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	}
 
 	type ResourceWithAcl struct {
-		ID   string            `json:"id,omitempty"`
-		Name string            `json:"name,omitempty"`
-		ACL  map[string]string `json:"_acl,omitempty"`
+		ID   string             `json:"id,omitempty"`
+		Name string             `json:"name,omitempty"`
+		ACL  map[string]UserACL `json:"_acl,omitempty"`
 	}
 
 	resAcl := &ResourceWithAcl{
@@ -198,9 +200,9 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	}
 	s := strings.Split(id, "/")
 	resAcl.ID = s[len(s)-1]
-	resAcl.ACL = make(map[string]string)
+	resAcl.ACL = make(map[string]UserACL)
 
-	resAcl.ACL["ALL"] = "READ"
+	resAcl.ACL["ALL"] = UserACL{Permission: "READ", Properties: make(map[string]interface{})}
 	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
@@ -209,11 +211,11 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
 	}
-	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"] != "READ" {
+	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"].Permission != "READ" {
 		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 1/READ", len(resAcl.ACL), resAcl.ACL["ALL"])
 	}
 
-	resAcl.ACL["user1"] = "WRITE"
+	resAcl.ACL["user1"] = UserACL{Permission: "WRITE", Properties: make(map[string]interface{})}
 	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
@@ -226,7 +228,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		t.Errorf("Failed to UpdateResourceACL . Got: %d  Want: 2", len(resAcl.ACL))
 	}
 
-	resAcl.ACL["user1"] = "READ"
+	resAcl.ACL["user1"] = UserACL{Permission: "READ", Properties: make(map[string]interface{})}
 	err = client.Resources.UpdateResourceACL("test:GoTestResource", resAcl.ID, resAcl.ACL)
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL . Got: %v  Want: nil", err)
@@ -235,7 +237,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
 	}
-	if len(resAcl.ACL) != 2 || resAcl.ACL["user1"] != "READ" {
+	if len(resAcl.ACL) != 2 || resAcl.ACL["user1"].Permission != "READ" {
 		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 2/READ", len(resAcl.ACL), resAcl.ACL["user1"])
 	}
 
@@ -248,7 +250,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to UpdateResourceACL (GetResource) . Got: %v  Want: nil", err)
 	}
-	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"] != "" {
+	if len(resAcl.ACL) != 1 || resAcl.ACL["ALL"].Permission != "" {
 		t.Errorf("Failed to UpdateResourceACL . Got: %d/%s  Want: 1/", len(resAcl.ACL), resAcl.ACL["ALL"])
 	}
 
