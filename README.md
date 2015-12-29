@@ -27,9 +27,10 @@ Instancing the client allow to use it everywhere. Since Authorization can be for
 See the Authorization part to get all the possible variations.
 
 ```Go
-// NewClient(http.Client, clientId, clientName, clientSecret, clientScopes,
-//           clientDomain, JWTSigningMethod, tokenExpirationTime)
-client, _ = NewClient(nil, "someID", "", "someSecret", "", "", "HS256", 3000)
+// NewClient(http.Client, endpoints, clientId, clientName, clientSecret,
+// clientScopes, clientDomain, JWTSigningMethod, tokenExpirationTime)
+endpoints := map[string]string{"iam": "https://localhost", "resources": "https://localhost"}
+client, _ = NewClient(nil, endpoints, "someID", "", "someSecret", "", "", "HS256", 3000)
 ```
 
 ### **Authorization**

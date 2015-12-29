@@ -78,8 +78,6 @@ func (r *ResourcesService) SearchRelation(collectionName, resourceID, relationNa
 }
 
 // SearchSpecificRelation returns a relation between two objects belonging to the relation
-func (r *ResourcesService) SearchSpecificRelation(firstCollection, firstCollectionID, relationName, secondCollection, secondCollectionID string) *Search {
-	search := r.SearchRelation(firstCollection, firstCollectionID, relationName)
-	search.Query.Eq[secondCollection] = secondCollectionID
-	return search
+func (r *ResourcesService) SearchSpecificRelation(collectionName, resourceID, relationName, relatedCollectionName, relatedID string) *Search {
+	return NewSearch(r.client, "resources", fmt.Sprintf("/v1.0/resource/%s/%s/%s;r=%s/%s", collectionName, resourceID, relationName, relatedCollectionName, relatedID))
 }
