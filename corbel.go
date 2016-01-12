@@ -76,6 +76,9 @@ type Client struct {
 
 	// Logger
 	logger *logrus.Logger
+
+	// LogLevel for the logger.
+	LogLevel string
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -159,6 +162,7 @@ func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, c
 	}
 	thisClient.logger = logrus.New()
 	thisClient.logger.Level = level
+	thisClient.LogLevel = logLevel
 
 	return thisClient, nil
 }
