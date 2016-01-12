@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/Sirupsen/logrus"
 )
 
 var (
@@ -71,6 +73,9 @@ type Client struct {
 	IAM       *IAMService
 	Resources *ResourcesService
 	Assets    *AssetsService
+
+	// Logger
+	logger *logrus.Logger
 }
 
 // URLFor returns the formated url of the API using the actual url scheme
@@ -80,7 +85,6 @@ func (c *Client) URLFor(endpoint, uri string) string {
 
 // Token returns the token to use as bearer. If the token has already expired
 // it refresh it.
-// TODO: Refresh token
 func (c *Client) Token() string {
 	// if CurrentToken == "" then return it as is
 	if c.CurrentToken == "" {
@@ -88,6 +92,7 @@ func (c *Client) Token() string {
 	}
 	// if we have CurrentToken check if already expired
 	if c.CurrentTokenExpiresAt <= time.Now().Unix()*1000 {
+		c.logger.Debug("refreshing token")
 		if c.CurrentRefreshToken != "" {
 			_ = c.IAM.RefreshToken()
 		} else {
@@ -97,10 +102,15 @@ func (c *Client) Token() string {
 	return c.CurrentToken
 }
 
+// DefaultClient return a client with most of its values set to the default ones
+func DefaultClient(endpoints map[string]string, clientID, clientName, clientSecret, clientScopes, clientDomain string) (*Client, error) {
+	return NewClient(nil, endpoints, clientID, clientName, clientSecret, clientScopes, clientDomain, "HS256", 3600, "info")
+}
+
 // NewClient returns a new Corbel API client.
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 // If a empty environment is provided, it will use production as environment.
-func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64) (*Client, error) {
+func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64, logLevel string) (*Client, error) {
 	var thisClient *Client
 
 	if httpClient == nil {
@@ -142,6 +152,13 @@ func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, c
 	thisClient.IAM = &IAMService{client: thisClient}
 	thisClient.Resources = &ResourcesService{client: thisClient}
 	thisClient.Assets = &AssetsService{client: thisClient}
+
+	level, err := logrus.ParseLevel(logLevel)
+	if err != nil {
+		return nil, errInvalidLogLevel
+	}
+	thisClient.logger = logrus.New()
+	thisClient.logger.Level = level
 
 	return thisClient, nil
 }

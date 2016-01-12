@@ -23,7 +23,7 @@ func TestResourcesAddToCollection(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		300)
+		300, "info")
 
 	err = client.IAM.OauthToken()
 	if err != nil {
@@ -80,7 +80,7 @@ func TestResourcesGetFromCollection(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		300)
+		300, "info")
 
 	err = client.IAM.OauthToken()
 	if err != nil {

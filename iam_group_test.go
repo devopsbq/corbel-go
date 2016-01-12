@@ -16,7 +16,7 @@ func TestIAMGroup(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		300)
+		300, "info")
 
 	if err != nil {
 		t.Errorf("Error instancing client. Got: %v  Want: nil", err)

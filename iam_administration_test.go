@@ -38,7 +38,7 @@ func TestIAM(t *testing.T) {
 		"silkroad-qa:root",
 		os.Getenv("IAM_CLIENT_DOMAIN"),
 		"HS256",
-		10)
+		10, "info")
 
 	if err != nil {
 		t.Errorf("Error instancing client. Got: %v  Want: nil", err)

@@ -19,7 +19,7 @@ func TestResourcesRelations(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		300)
+		300, "info")
 
 	err = client.IAM.OauthToken()
 	if err != nil {

@@ -99,7 +99,7 @@ func TestSearchQueryString(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		300)
+		300, "info")
 
 	search := NewSearch(client, "resources", "/v1.0/resource/test:Collection")
 
@@ -158,7 +158,7 @@ func TestSearchPagingAndAggregation(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		1000)
+		1000, "info")
 
 	type ResourceForTest struct {
 		ID   string  `json:"id, omitempty"`
