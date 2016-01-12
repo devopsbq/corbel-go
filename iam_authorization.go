@@ -20,6 +20,7 @@ type iamOauthTokenResponse struct {
 //
 // API Docs: http://docs.silkroadiam.apiary.io/#reference/authorization/oauthtoken
 func (i *IAMService) OauthToken() error {
+	i.client.logger.Debug("requesting OauthToken")
 	return i.OauthTokenBasicAuth("", "")
 }
 
@@ -27,6 +28,7 @@ func (i *IAMService) OauthToken() error {
 //
 // API Docs: http://docs.silkroadiam.apiary.io/#reference/authorization/oauthtoken
 func (i *IAMService) RefreshToken() error {
+	i.client.logger.Debug("refreshing token")
 	token := i.newToken()
 	token.Claims["refresh_token"] = i.client.CurrentRefreshToken
 	// fmt.Println("token:", token)
@@ -35,6 +37,7 @@ func (i *IAMService) RefreshToken() error {
 
 //OauthTokenPrn get user access token to use it
 func (i *IAMService) OauthTokenPrn(username string) error {
+	i.client.logger.Debugf("requesting OauthTokenPrn for %s", username)
 	token := i.newToken()
 	token.Claims["prn"] = username
 	return i.auth(token)
@@ -44,6 +47,7 @@ func (i *IAMService) OauthTokenPrn(username string) error {
 //
 // API Docs: http://docs.silkroadiam.apiary.io/#reference/authorization/oauthtoken
 func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
+	i.client.logger.Debugf("requesting OauthTokenBasicAuth for %s", username)
 	token := i.newToken()
 	// looking for basic auth pair
 	if username != "" {
@@ -58,6 +62,7 @@ func (i *IAMService) OauthTokenBasicAuth(username, password string) error {
 func (i *IAMService) auth(token *jwt.Token) error {
 	// Sign and get the complete encoded token as a string
 	tokenString, err := token.SignedString([]byte(i.client.ClientSecret))
+	i.client.logger.Debugf("token: %s", tokenString)
 	if err != nil {
 		return errJWTEncodingError
 	}
@@ -78,8 +83,7 @@ func (i *IAMService) auth(token *jwt.Token) error {
 		return err
 	}
 
-	// fmt.Println("iamResponse:", toolkit.PrettyPrint(iamResponse))
-
+	i.client.logger.Debugf("upgrading token. Access token: %s, Refresh token: %s", iamResponse.AccessToken, iamResponse.RefreshToken)
 	i.client.CurrentToken = iamResponse.AccessToken
 	i.client.CurrentTokenExpiresAt = iamResponse.ExpiresAt
 	i.client.CurrentRefreshToken = iamResponse.RefreshToken
@@ -98,7 +102,6 @@ func (i *IAMService) newToken() *jwt.Token {
 	token.Claims["exp"] = time.Now().Add(duration).Unix()
 	token.Claims["domain"] = i.client.ClientDomain
 	token.Claims["name"] = i.client.ClientName
-
 	return token
 }
 

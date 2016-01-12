@@ -32,7 +32,7 @@ func TestClientNewRequest(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		3000)
+		3000, "info")
 
 	req, err = client.NewRequest("GET", "iam", "/version", nil)
 	if err != nil {

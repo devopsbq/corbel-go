@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-// NewRequestContentType creates an API request using 'application/json', most common api query.
+// NewRequestContentType creates an API request.
 // method is the HTTP method to use
 // endpoint is the endpoint of SR to speak with
 // urlStr is the url to query. it must be preceded by a slash.
@@ -38,12 +38,11 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 	req.Header.Add("Content-Type", headerContentType)
 	req.Header.Add("Accept", headerAccept)
 	req.Header.Add("User-Agent", c.UserAgent)
-	if c.CurrentToken != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.Token()))
+	if token := c.Token(); token != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
-	// fmt.Println(u.String())                     // for debug
-	// fmt.Println(buf.String())                   // for debug
-	// fmt.Println("CurrentToken", c.CurrentToken) // for debug
+	c.logger.Debugf("Request values -> Headers: %v, Host: %s, Method: %s, Form: %v, URL: %v, Body: %v",
+		req.Header, req.Host, req.Method, req.Form, req.URL, req.Body)
 	return req, nil
 }
 
@@ -66,6 +65,8 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, err error, obje
 	}
 
 	res, err = client.httpClient.Do(req)
+	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
+		res.Header, res.StatusCode, res.Status, res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -95,6 +96,8 @@ func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desired
 	}
 
 	res, err = client.httpClient.Do(req)
+	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
+		res.Header, res.StatusCode, res.Status, res.Body)
 	if err != nil {
 		return "", err
 	}

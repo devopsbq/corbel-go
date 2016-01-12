@@ -12,28 +12,28 @@ func TestClientNewClient(t *testing.T) {
 		err    error
 	)
 
-	client, err = NewClient(nil, nil, "", "", "", "", "", "", 3000)
+	client, err = NewClient(nil, nil, "", "", "", "", "", "", 3000, "info")
 	if err == nil {
 		t.Error("NewClient must fail if JWT clientJWTSigningMethod is not an allowed method.")
 	}
 
-	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 0)
+	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 0, "info")
 	if err == nil {
 		t.Error("NewClient must fail if Token expiration time is 0")
 	}
 
-	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 3601)
+	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 3601, "info")
 	if err == nil {
 		t.Error("NewClient must fail if Token expiration time is over 3600")
 	}
 
-	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 3000)
+	client, err = NewClient(nil, nil, "", "", "", "", "", "HS256", 3000, "info")
 	if err == nil {
 		t.Error("NewClient must fail if client Id or Secret are not passed, but it did't raise an error")
 	}
 
 	endpoints := map[string]string{"iam": "https://iam.bqws.io", "resources": "https://resources.bqws.io"}
-	client, err = NewClient(nil, nil, "someID", "", "someSecret", "", "", "HS256", 3000)
+	client, err = NewClient(nil, nil, "someID", "", "someSecret", "", "", "HS256", 3000, "info")
 	if err != nil {
 		t.Error("NewClient must not fail if client Id or Secret are provided, but it raised an error")
 	}
@@ -64,13 +64,13 @@ func TestClientURLFor(t *testing.T) {
 		client *Client
 	)
 
-	client, _ = NewClient(nil, nil, "someID", "", "someSecret", "", "", "HS256", 3000)
+	client, _ = NewClient(nil, nil, "someID", "", "someSecret", "", "", "HS256", 3000, "info")
 	if got, want := client.URLFor("iam", "/v1.0/auth/token"), "https://iam.bqws.io/v1.0/auth/token"; got != want {
 		t.Errorf("urlFor url is %v, but want %v", got, want)
 	}
 
 	endpoints := map[string]string{"iam": "https://iam-qa.bqws.io", "resources": "https://resources-qa.bqws.io"}
-	client, _ = NewClient(nil, endpoints, "someID", "", "someSecret", "", "", "HS256", 3000)
+	client, _ = NewClient(nil, endpoints, "someID", "", "someSecret", "", "", "HS256", 3000, "info")
 	if got, want := client.URLFor("iam", "/v1.0/auth/token"), "https://iam-qa.bqws.io/v1.0/auth/token"; got != want {
 		t.Errorf("urlFor url is %v, but want %v", got, want)
 	}

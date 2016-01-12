@@ -39,10 +39,7 @@ func (i *IAMService) UserExists(username string) bool {
 
 	req, err = i.client.NewRequest("HEAD", "iam", fmt.Sprintf("/v1.0/username/%s", username), nil)
 	_, err = returnErrorHTTPSimple(i.client, req, err, 200)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // UserUpdate updates an user by using IAMUser

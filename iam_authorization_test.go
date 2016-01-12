@@ -21,7 +21,7 @@ func TestIAMOauthToken(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		100)
+		100, "info")
 
 	err = client.IAM.OauthToken()
 	if got := err; got != nil {
@@ -49,7 +49,7 @@ func TestIAMRefreshToken(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		100)
+		100, "info")
 
 	err = client.IAM.OauthToken()
 	if got := err; got != nil {
@@ -73,7 +73,7 @@ func TestIAMOauthTokenUpgrade(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		10, "info")
 
 	err = client.IAM.OauthTokenUpgrade("aaaaaa")
 	if err != errHTTPNotAuthorized {
@@ -103,7 +103,7 @@ func TestIAMOauthTokenBasicAuth(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		10)
+		10, "info")
 
 	err = client.IAM.OauthTokenBasicAuth("username", "password")
 	if err.Error() != "401 Unauthorized" {

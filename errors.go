@@ -16,4 +16,5 @@ var (
 	errResponseError              = errors.New("HTTP: Response error")
 	errURLParse                   = errors.New("HTTP: URL Parse Error")
 	errJSONUnmarshalError         = errors.New("Encoding: JSON Unmarshal error")
+	errInvalidLogLevel            = errors.New("Invalid log level")
 )
