@@ -79,6 +79,7 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, errr error, obj
 		}
 	}
 	client.logger.WithFields(logrus.Fields{
+		"method": res.Request.Method, "url": res.Request.URL.String(),
 		"code": res.StatusCode, "status": res.Status, "body": string(objectByte),
 	}).Debug("response received")
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
