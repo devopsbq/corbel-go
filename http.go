@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"reflect"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/google/go-querystring/query"
 )
 
@@ -20,18 +21,21 @@ import (
 // headerAccept is the header['Accept'] of the request.
 // body is, if specified, the value JSON encoded to be used as request body.
 func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentType, headerAccept string, body interface{}) (*http.Request, error) {
-	u, _ := url.Parse(c.URLFor(endpoint, urlStr))
-
+	url, _ := url.Parse(c.URLFor(endpoint, urlStr))
 	buf := new(bytes.Buffer)
 	if body != nil {
-		err := json.NewEncoder(buf).Encode(body)
-		if err != nil {
-			return nil, err
+		if err := json.NewEncoder(buf).Encode(body); err != nil {
+			c.logger.Debugf("failed to encode body: %v", err)
+			return nil, errJSONMarshalError
 		}
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	c.logger.WithFields(logrus.Fields{
+		"method": method, "accept": headerAccept, "url": url.String(), "body": buf.String(),
+	}).Debug("new request")
+	req, err := http.NewRequest(method, url.String(), buf)
 	if err != nil {
+		c.logger.Debugf("failed to create request: %v", err)
 		return nil, err
 	}
 
@@ -41,8 +45,7 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 	if token := c.Token(); token != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
-	c.logger.Debugf("Request values -> Headers: %v, Host: %s, Method: %s, Form: %v, URL: %v, Body: %v",
-		req.Header, req.Host, req.Method, req.Form, req.URL, req.Body)
+	c.logger.Debugf("request headers: %v", req.Header)
 	return req, nil
 }
 
@@ -51,75 +54,46 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 // endpoint is the endpoint of SR to speak with
 // url is the url to query. it must be preceded by a slash.
 // body is, if specified, the value JSON encoded to be used as request body.
-func (c *Client) NewRequest(method, endpoint, urlStr string, body interface{}) (*http.Request, error) {
-	return c.NewRequestContentType(method, endpoint, urlStr, "application/json", "application/json", body)
+func (c *Client) NewRequest(method, endpoint, url string, body interface{}) (*http.Request, error) {
+	return c.NewRequestContentType(method, endpoint, url, "application/json", "application/json", body)
 }
 
-func returnErrorHTTPInterface(client *Client, req *http.Request, err error, object interface{}, desiredStatusCode int) (string, error) {
-	var (
-		res        *http.Response
-		objectByte []byte
-	)
-	if err != nil {
-		return "", err
+func returnErrorHTTPInterface(client *Client, req *http.Request, errr error, object interface{}, desiredStatusCode int) (string, error) {
+	if errr != nil {
+		return "", errr
 	}
 
-	res, err = client.httpClient.Do(req)
-	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
-		res.Header, res.StatusCode, res.Status, res.Body)
+	res, err := client.httpClient.Do(req)
 	if err != nil {
+		client.logger.Debugf("failed to make request: %v", err)
 		return "", err
 	}
-
+	objectByte, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
-	objectByte, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return "", errResponseError
+	if object != nil {
+		if err != nil {
+			return "", errResponseError
+		}
+		if err = json.Unmarshal(objectByte, &object); err != nil {
+			return "", errJSONUnmarshalError
+		}
 	}
-
-	err = json.Unmarshal(objectByte, &object)
-	if err != nil {
-		return "", errJSONUnmarshalError
-	}
-
-	// fmt.Println(string(objectByte)) // for debug
-
+	client.logger.WithFields(logrus.Fields{
+		"code": res.StatusCode, "status": res.Status, "body": string(objectByte),
+	}).Debug("response received")
 	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
 }
 
 func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desiredStatusCode int) (string, error) {
-	var (
-		res *http.Response
-	)
-	if err != nil {
-		return "", err
-	}
-
-	res, err = client.httpClient.Do(req)
-	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
-		res.Header, res.StatusCode, res.Status, res.Body)
-	if err != nil {
-		return "", err
-	}
-
-	defer res.Body.Close()
-	// objectByte, _ := ioutil.ReadAll(res.Body) // for debug
-	// fmt.Println(string(objectByte)) // for debug
-
-	return returnErrorByHTTPStatusCode(res, desiredStatusCode)
+	return returnErrorHTTPInterface(client, req, err, nil, desiredStatusCode)
 }
 
 // returnErrorByHTTPStatusCode returns the http error code or nil if it returns the
 // desired error
 func returnErrorByHTTPStatusCode(res *http.Response, desiredStatusCode int) (string, error) {
-	var (
-		location       *url.URL
-		locationString string
-	)
-	location, _ = res.Location()
-	if location == nil {
-		locationString = ""
-	} else {
+	location, _ := res.Location()
+	locationString := ""
+	if location != nil {
 		locationString = location.String()
 	}
 

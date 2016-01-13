@@ -111,8 +111,6 @@ func DefaultClient(endpoints map[string]string, clientID, clientName, clientSecr
 // If a nil httpClient is provided, it will return a http.DefaultClient.
 // If a empty environment is provided, it will use production as environment.
 func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, clientName, clientSecret, clientScopes, clientDomain, clientJWTSigningMethod string, tokenExpirationTime uint64, logLevel string) (*Client, error) {
-	var thisClient *Client
-
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
@@ -136,7 +134,7 @@ func NewClient(httpClient *http.Client, endpoints map[string]string, clientID, c
 		return nil, errMissingClientParams
 	}
 
-	thisClient = &Client{
+	thisClient := &Client{
 		httpClient:             httpClient,
 		Endpoints:              endpoints,
 		ClientName:             clientName,
