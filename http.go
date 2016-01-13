@@ -41,6 +41,8 @@ func (c *Client) NewRequestContentType(method, endpoint, urlStr, headerContentTy
 	if token := c.Token(); token != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
+	c.logger.Debugf("Original Request -> Header: %v, Method: %v, URL: %v",
+		req.Header, req.Method, req.RequestURI, req.URL)
 	c.logger.Debugf("Request values -> Headers: %v, Host: %s, Method: %s, Form: %v, URL: %v, Body: %v",
 		req.Header, req.Host, req.Method, req.Form, req.URL, req.Body)
 	return req, nil
@@ -65,6 +67,8 @@ func returnErrorHTTPInterface(client *Client, req *http.Request, err error, obje
 	}
 
 	res, err = client.httpClient.Do(req)
+	client.logger.Debugf("Original Request -> Header: %v, Method: %v, URL: %v",
+		req.Header, req.Method, req.RequestURI, req.URL)
 	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
 		res.Header, res.StatusCode, res.Status, res.Body)
 	if err != nil {
@@ -96,6 +100,8 @@ func returnErrorHTTPSimple(client *Client, req *http.Request, err error, desired
 	}
 
 	res, err = client.httpClient.Do(req)
+	client.logger.Debugf("Original Request -> Header: %v, Method: %v, URL: %v",
+		req.Header, req.Method, req.RequestURI, req.URL)
 	client.logger.Debugf("Response values -> Header: %v, Code: %d, Status: %s, Body: %v",
 		res.Header, res.StatusCode, res.Status, res.Body)
 	if err != nil {
