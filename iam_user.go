@@ -1,9 +1,6 @@
 package corbel
 
-import (
-	"fmt"
-	"net/http"
-)
+import "fmt"
 
 // IAMUser is the representation of an User object used by IAM
 type IAMUser struct {
@@ -32,12 +29,7 @@ func (i *IAMService) UserAdd(user *IAMUser) (string, error) {
 
 // UserExists checks if an user exists in the domain of the client
 func (i *IAMService) UserExists(username string) bool {
-	var (
-		req *http.Request
-		err error
-	)
-
-	req, err = i.client.NewRequest("HEAD", "iam", fmt.Sprintf("/v1.0/username/%s", username), nil)
+	req, err := i.client.NewRequest("HEAD", "iam", fmt.Sprintf("/v1.0/username/%s", username), nil)
 	_, err = returnErrorHTTPSimple(i.client, req, err, 200)
 	return err == nil
 }

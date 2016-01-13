@@ -15,6 +15,7 @@ var (
 	errJWTEncodingError           = errors.New("JWT: Encoding Error")
 	errResponseError              = errors.New("HTTP: Response error")
 	errURLParse                   = errors.New("HTTP: URL Parse Error")
+	errJSONMarshalError           = errors.New("Encoding: JSON Marshal error")
 	errJSONUnmarshalError         = errors.New("Encoding: JSON Unmarshal error")
 	errInvalidLogLevel            = errors.New("Invalid log level")
 )

@@ -3,7 +3,6 @@ package corbel
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 // Search is the struct used to query every searcheable api in the platform
@@ -16,57 +15,35 @@ type Search struct {
 	baseURL  string
 }
 
-// aggregationCount is the json representation of Count responses
-type aggregationCount struct {
-	Count int `json:"count"`
-}
-
-// aggregationAvg is the json representation of Average responses
-type aggregationAvg struct {
-	Average float64 `json:"average"`
-}
-
-// aggregationSum is the json representation of Sum responses
-type aggregationSum struct {
-	Sum float64 `json:"sum"`
-}
-
 // Page fills the struct array passed as parameter as paged search by pageNumber
 func (s *Search) Page(pageNumber int, result interface{}) error {
-	var (
-		req *http.Request
-		err error
-	)
 	opts := &SearchListOptions{
 		APIQuery:    s.Query.string(),
 		APISort:     s.Sort.string(),
 		APIPage:     pageNumber,
 		APIPageSize: s.PageSize,
 	}
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	req, err := s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	_, err = returnErrorHTTPInterface(s.client, req, err, result, 200)
 	return err
 }
 
 // Count returns the aggregated count of an especific field in the search
 func (s *Search) Count(field string) (int, error) {
-	var (
-		req       *http.Request
-		err       error
-		aggrCount aggregationCount
-	)
+	var aggrCount struct {
+		Count int `json:"count"`
+	}
+
 	opts := &SearchListOptions{
 		APIQuery:       s.Query.string(),
 		APISort:        s.Sort.string(),
 		APIAggregation: fmt.Sprintf("{\"$count\":\"%s\"}", field),
 	}
-
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	req, err := s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
 	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrCount, 200)
 	if err != nil {
 		return 0, err
 	}
-
 	return aggrCount.Count, nil
 }
 
@@ -78,23 +55,19 @@ func (s *Search) CountAll() (int, error) {
 
 // Average returns the average of an especific field in the search
 func (s *Search) Average(field string) (float64, error) {
-	var (
-		req     *http.Request
-		err     error
-		aggrAvg aggregationAvg
-	)
+	var aggrAvg struct {
+		Average float64 `json:"average"`
+	}
 
 	opts := &SearchListOptions{
 		APIQuery:       s.Query.string(),
 		APISort:        s.Sort.string(),
 		APIAggregation: fmt.Sprintf("{\"$avg\":\"%s\"}", field),
 	}
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrAvg, 200)
-	if err != nil {
+	req, err := s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	if _, err = returnErrorHTTPInterface(s.client, req, err, &aggrAvg, 200); err != nil {
 		return 0, err
 	}
-
 	return aggrAvg.Average, nil
 }
 
@@ -106,24 +79,19 @@ func (s *Search) Average(field string) (float64, error) {
 
 // Sum returns the average of an especific field in the search as float
 func (s *Search) Sum(field string) (float64, error) {
-	var (
-		req     *http.Request
-		err     error
-		aggrSum aggregationSum
-	)
+	var aggrSum struct {
+		Sum float64 `json:"sum"`
+	}
 
 	opts := &SearchListOptions{
 		APIQuery:       s.Query.string(),
 		APISort:        s.Sort.string(),
 		APIAggregation: fmt.Sprintf("{\"$sum\":\"%s\"}", field),
 	}
-
-	req, err = s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
-	_, err = returnErrorHTTPInterface(s.client, req, err, &aggrSum, 200)
-	if err != nil {
+	req, err := s.client.NewRequest("GET", s.endpoint, s.queryString(opts), nil)
+	if _, err = returnErrorHTTPInterface(s.client, req, err, &aggrSum, 200); err != nil {
 		return 0, err
 	}
-
 	return aggrSum.Sum, nil
 }
 
@@ -207,21 +175,16 @@ func newSort() *sort {
 
 // QueryString returns the query string to append to the url we are sorting
 func (s *sort) string() string {
-	var (
-		apiSortString []byte
-		apiSortMap    = make(map[string]string)
-		field         string
-	)
-
-	for _, field = range s.Asc {
+	apiSortMap := make(map[string]string)
+	for _, field := range s.Asc {
 		apiSortMap[field] = "asc"
 	}
 
-	for _, field = range s.Desc {
+	for _, field := range s.Desc {
 		apiSortMap[field] = "desc"
 	}
 
-	apiSortString, _ = json.Marshal(apiSortMap)
+	apiSortString, _ := json.Marshal(apiSortMap)
 	if string(apiSortString) == "{}" {
 		return ""
 	}

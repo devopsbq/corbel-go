@@ -21,7 +21,7 @@ func TestIAMOauthToken(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		100, "info")
+		300, "info")
 
 	err = client.IAM.OauthToken()
 	if got := err; got != nil {
@@ -49,7 +49,7 @@ func TestIAMRefreshToken(t *testing.T) {
 		"",
 		"silkroad-qa",
 		"HS256",
-		100, "info")
+		300, "info")
 
 	err = client.IAM.OauthToken()
 	if got := err; got != nil {
